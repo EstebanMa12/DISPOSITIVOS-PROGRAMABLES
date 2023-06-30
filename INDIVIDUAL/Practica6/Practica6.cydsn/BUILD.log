@@ -1,0 +1,28 @@
+--------------- Build Started: 04/29/2023 02:23:33 Project: Practica6, Configuration: ARM GCC 5.4-2016-q2-update Debug ---------------
+The code generation step is up to date.
+arm-none-eabi-gcc.exe -mcpu=cortex-m3 -mthumb -I. -IGenerated_Source\PSoC5 -Wa,-alh=.\CortexM3\ARM_GCC_541\Debug/main.lst -g -D DEBUG -D CY_CORE_ID=0 -Wall -ffunction-sections -ffat-lto-objects -Og -c main.c -o .\CortexM3\ARM_GCC_541\Debug\main.o
+In file included from Generated_Source\PSoC5/project.h:22:0,
+                 from main.c:12:
+main.c: In function 'main':
+Generated_Source\PSoC5/LCD.h:130:38: error: called object is not a function or function pointer
+ #define LCD_CLEAR_DISPLAY            (0x01u)
+                                      ^
+main.c:65:25: note: in expansion of macro 'LCD_CLEAR_DISPLAY'
+                         LCD_CLEAR_DISPLAY();
+                         ^
+main.c:30:11: warning: unused variable 'Segundos' [-Wunused-variable]
+     uint8 Segundos=0;
+           ^
+main.c:29:12: warning: unused variable 'mVolts' [-Wunused-variable]
+     uint16 mVolts=0;
+            ^
+main.c:28:11: warning: unused variable 'VALADC' [-Wunused-variable]
+     int32 VALADC=0;
+           ^
+main.c: In function 'Visual':
+main.c:91:33: error: 'bandAdvertencia' undeclared (first use in this function)
+             if (Temperatura>=0) bandAdvertencia=1;
+                                 ^
+main.c:91:33: note: each undeclared identifier is reported only once for each function it appears in
+The command 'arm-none-eabi-gcc.exe' failed with exit code '1'.
+--------------- Build Failed: 04/29/2023 02:23:39 ---------------

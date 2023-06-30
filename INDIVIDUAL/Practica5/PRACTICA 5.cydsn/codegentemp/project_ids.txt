@@ -1,0 +1,6 @@
+C:\Users\Esteban\OneDrive - Universidad de Antioquia\SEMESTRE 2023-1\DISPOSITIVOS PROGRAMABLES\INDIVIDUAL\Practica5\PRACTICA 5.cydsn\PRACTICA 5.cyprj|845bceba-8307-4f50-b0dc-b335c66798f0
+C:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\psoc\content\default\CyAnnotationLibrary\CyAnnotationLibrary.cylib\CyAnnotationLibrary.cyprj|c4b72d05-862c-4797-b3f7-84027ba36112
+C:\Users\Esteban\Documents\PSoC Creator\4.4\Downloads ( 4.4).cylib\Downloads ( 4.4).cyprj|b2693941-bd92-4743-9e00-c974db3d1c0f
+C:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\psoc\content\cycomponentlibraryupdates\CyComponentLibraryUpdates.cylib\CyComponentLibraryUpdates.cyprj|b106923b-8e75-4811-b85c-deec7cd1f780
+C:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\psoc\content\cycomponentlibrary\CyComponentLibrary.cylib\CyComponentLibrary.cyprj|63a8eb8b-088a-42f9-b3b0-721c02b2bb6b
+C:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\psoc\content\cyprimitives\CyPrimitives.cylib\CyPrimitives.cyprj|60885de3-022f-4220-8d86-d34ccb37826a

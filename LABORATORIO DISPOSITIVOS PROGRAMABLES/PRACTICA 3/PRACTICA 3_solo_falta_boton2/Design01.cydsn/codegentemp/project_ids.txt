@@ -1,0 +1,6 @@
+C:\Users\User\OneDrive - Universidad de Antioquia\2023-1\Dispositivos programables\LABORATORIO\PRACTICA 3\PRACTICA 3_solo_falta_boton2\Design01.cydsn\Design01.cyprj|9a649ce4-d1bc-43e2-b738-19ac54c62069
+C:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\psoc\content\default\CyAnnotationLibrary\CyAnnotationLibrary.cylib\CyAnnotationLibrary.cyprj|2b745457-47ac-4224-9213-18a05689e2da
+C:\Users\User\Documents\PSoC Creator\4.4\Downloads ( 4.4).cylib\Downloads ( 4.4).cyprj|28bbc156-af5d-4463-8c95-e0b35dbaa713
+C:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\psoc\content\cycomponentlibraryupdates\CyComponentLibraryUpdates.cylib\CyComponentLibraryUpdates.cyprj|cd29a799-a6c9-4189-a3c9-38aaa7f49346
+C:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\psoc\content\cycomponentlibrary\CyComponentLibrary.cylib\CyComponentLibrary.cyprj|67f6097c-1c3b-419d-b7ae-044b0b765c83
+C:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\psoc\content\cyprimitives\CyPrimitives.cylib\CyPrimitives.cyprj|d6f13616-2ae4-4671-8a00-85ed29c28b25

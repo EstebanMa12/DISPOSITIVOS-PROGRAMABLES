@@ -1,0 +1,2483 @@
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"main.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.IRQ_ISR,"ax",%progbits
+  20              		.align	2
+  21              		.global	IRQ_ISR
+  22              		.thumb
+  23              		.thumb_func
+  24              		.type	IRQ_ISR, %function
+  25              	IRQ_ISR:
+  26              	.LFB64:
+  27              		.file 1 "main.c"
+   1:main.c        **** /* ========================================
+   2:main.c        ****  *
+   3:main.c        ****  * Copyright YOUR COMPANY, THE YEAR
+   4:main.c        ****  * All Rights Reserved
+   5:main.c        ****  * UNPUBLISHED, LICENSED SOFTWARE.
+   6:main.c        ****  *
+   7:main.c        ****  * CONFIDENTIAL AND PROPRIETARY INFORMATION
+   8:main.c        ****  * WHICH IS THE PROPERTY OF your company.
+   9:main.c        ****  *
+  10:main.c        ****  * ========================================
+  11:main.c        **** */
+  12:main.c        **** #include "project.h"
+  13:main.c        **** CY_ISR_PROTO(IRQ_ISR);
+  14:main.c        **** CY_ISR_PROTO(Timer_ISR);
+  15:main.c        **** uint8 band_2mili=0;
+  16:main.c        **** uint8 TitileoSingularDespla=0;
+  17:main.c        **** uint16 band380ms=0;
+  18:main.c        **** uint8 mili2segundos=0;
+  19:main.c        **** uint8 pulsecounter=0;
+  20:main.c        **** uint8 Posicion=1;
+  21:main.c        **** uint8 contador[4]={0,0,0,0};
+  22:main.c        **** uint8 cnt4seg=0;
+  23:main.c        **** uint8 Bright[2]={0,255};
+  24:main.c        **** uint8 BandeBrillo=0;
+  25:main.c        **** uint16 band4seg=0;
+  26:main.c        **** uint16 cnt=0;
+  27:main.c        **** uint8 configuration=0, Segundos=0;
+  28:main.c        **** uint16 T_tiempo=0, bandseg=0, vel =500,cnt_noconf;
+  29:main.c        **** uint8 band_tarea1=0,Band_Final=0;
+  30:main.c        **** uint16 cnt_time;
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 2
+
+
+  31:main.c        **** int main(void)
+  32:main.c        **** {
+  33:main.c        ****     CyGlobalIntEnable; /* Enable global interrupts. */
+  34:main.c        ****     Interrupt_StartEx(IRQ_ISR);
+  35:main.c        ****     Timer_StartEx(Timer_ISR);
+  36:main.c        ****     Segments_Start();
+  37:main.c        ****     Contador_Start();
+  38:main.c        ****     DosP_Write(0b1);
+  39:main.c        ****     Segments_Write7SegNumberDec(0,1,3,Segments_ZERO_PAD);//Se escriben 3 ceros a la derecha en los 
+  40:main.c        ****     
+  41:main.c        **** 
+  42:main.c        ****     /* Place your initialization/startup code here (e.g. MyInst_Start()) */
+  43:main.c        **** 
+  44:main.c        ****     for(;;)
+  45:main.c        ****     {
+  46:main.c        ****         if(band_2mili){
+  47:main.c        ****             band_2mili=0;
+  48:main.c        ****             band4seg++;
+  49:main.c        ****     //-----------------------TAREA 1---------------------------------------------------------------
+  50:main.c        ****             if(SW_Read()==0){ 
+  51:main.c        ****                 mili2segundos++;
+  52:main.c        ****                 Band_Final=0;
+  53:main.c        **** //                contador[1]=0;contador[2]=0;contador[3]=0;
+  54:main.c        ****     //-----------------------TITILEOS--------------------------------------------------------------
+  55:main.c        ****                 if(mili2segundos<=125)Segments_SetBrightness(Bright[1],Posicion);
+  56:main.c        ****                 if(mili2segundos>125)Segments_SetBrightness(Bright[0],Posicion);
+  57:main.c        ****                 if(mili2segundos>250)mili2segundos=0;             
+  58:main.c        ****     //-----------------------4SEGUNDOS-------------------------------------------------------------
+  59:main.c        ****                 if(band4seg==2000){// La condición es que si no se realiza ninguna acción el titi
+  60:main.c        ****                     band4seg=0;
+  61:main.c        ****                     Segments_SetBrightness(Bright[1],Posicion);
+  62:main.c        **** 
+  63:main.c        ****                     if(Posicion==3){
+  64:main.c        ****                         Posicion=0;  
+  65:main.c        ****                         configuration=1;   
+  66:main.c        ****                     }
+  67:main.c        ****                     mili2segundos=0;
+  68:main.c        ****                     Posicion++;
+  69:main.c        ****                 }
+  70:main.c        ****     //----------------------------------------
+  71:main.c        **** 
+  72:main.c        ****                 if(band380ms){
+  73:main.c        ****                     cnt++;
+  74:main.c        ****                     band4seg=0;
+  75:main.c        ****                     if(pulsecounter==1 && cnt>=190){
+  76:main.c        ****                         if(contador[1]>=2)contador[1]=-1;// Definición de limites de los minutos y
+  77:main.c        ****                         if(contador[2]>=5)contador[2]=-1;
+  78:main.c        ****                         if(contador[3]>=9)contador[3]=-1;                      
+  79:main.c        ****                         contador[Posicion]++;// Si se cumple la condición se cambia de posición
+  80:main.c        ****                         Segments_Write7SegDigitDec(contador[Posicion],Posicion); // Se escribe el v
+  81:main.c        ****                         
+  82:main.c        ****                         cnt=0;
+  83:main.c        ****                         pulsecounter=0;
+  84:main.c        ****                         band4seg=0;
+  85:main.c        ****                         band380ms=0;
+  86:main.c        ****                         mili2segundos=0;
+  87:main.c        ****                     }
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 3
+
+
+  88:main.c        ****                     else if(pulsecounter==2 && cnt<190){
+  89:main.c        ****                         cnt=0; // Si hay dos pulsaciones se reinicia el contador
+  90:main.c        ****                         Segments_SetBrightness(Bright[1],Posicion);                        
+  91:main.c        ****                         if(Posicion==3){
+  92:main.c        ****                             Posicion=0;
+  93:main.c        ****                             configuration=1; }
+  94:main.c        ****                         Posicion++;
+  95:main.c        ****                         pulsecounter=0;
+  96:main.c        ****                         band380ms=0;
+  97:main.c        ****                         band4seg=0;
+  98:main.c        ****                         mili2segundos=0;//               
+  99:main.c        ****                     }
+ 100:main.c        ****                 }
+ 101:main.c        **** 
+ 102:main.c        ****             }
+ 103:main.c        **** //-----------------TAREA 2------------------------------------------------
+ 104:main.c        ****             if(SW_Read()){
+ 105:main.c        ****                 if(configuration==1){
+ 106:main.c        ****                     cnt_time++;
+ 107:main.c        ****                     Segments_SetBrightness(Bright[0],0);
+ 108:main.c        ****                     Segments_SetBrightness(Bright[1],1);
+ 109:main.c        ****                     Segments_SetBrightness(Bright[1],2);
+ 110:main.c        ****                     Segments_SetBrightness(Bright[1],3);
+ 111:main.c        ****                     //--------BUZZER----------------------------
+ 112:main.c        ****                     if(SW_buzz_Read()==1){
+ 113:main.c        ****                         if(contador[3]%5==0)Buzzer_Write(1);
+ 114:main.c        ****                         else Buzzer_Write(0);
+ 115:main.c        ****                     }else Buzzer_Write(0);
+ 116:main.c        ****                     
+ 117:main.c        ****                     //---------------------
+ 118:main.c        **** 
+ 119:main.c        ****                     Segments_SetBrightness(Bright[1],1);
+ 120:main.c        ****                     if(cnt_time>=vel){
+ 121:main.c        ****                         cnt_time=0; // Se reinicia el contador
+ 122:main.c        ****                         
+ 123:main.c        ****                         T_tiempo= contador[1]*60 + contador[2]*10 +contador[3];// Se guarda en una 
+ 124:main.c        ****                         T_tiempo--;// Se va restando cada vez
+ 125:main.c        ****                         contador[1]= T_tiempo/60;// Minutos
+ 126:main.c        ****                         contador[2]=(T_tiempo%60)/10;// Corresponde a decenas de segundos
+ 127:main.c        ****                         contador[3]=T_tiempo%10;// Segundos
+ 128:main.c        ****                         Segments_Write7SegDigitDec(contador[1],1);
+ 129:main.c        ****                         Segments_Write7SegDigitDec(contador[2],2);
+ 130:main.c        ****                         Segments_Write7SegDigitDec(contador[3],3);
+ 131:main.c        ****                         if(contador[1]==0 && contador[2]==0 && contador[3]==0){// Si todo se cumple
+ 132:main.c        ****                             configuration=0;
+ 133:main.c        ****                             Band_Final=1;}
+ 134:main.c        ****                     }
+ 135:main.c        **** 
+ 136:main.c        ****                     
+ 137:main.c        ****                     if(Band_Final==1){//
+ 138:main.c        ****                         LEDS_Write(1);
+ 139:main.c        ****                         Buzzer_Write(0);
+ 140:main.c        ****                         Segments_SetBrightness(Bright[1],0);
+ 141:main.c        ****                         Segments_Write7SegNumberDec(0,0,4,Segments_ZERO_PAD);
+ 142:main.c        ****                     }if(SW_Read()==0)configuration=0;
+ 143:main.c        ****                 }
+ 144:main.c        ****                 else if(configuration==0 && Band_Final==0){
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 4
+
+
+ 145:main.c        ****                     band4seg=0;
+ 146:main.c        ****                     cnt_noconf++;// Contador para cuando no esta configurado
+ 147:main.c        ****                     Segments_Write7SegNumberDec(0,0,4,Segments_ZERO_PAD);
+ 148:main.c        ****                     
+ 149:main.c        ****                     if(cnt_noconf<=100){
+ 150:main.c        ****                         Segments_SetBrightness(Bright[0], 1);
+ 151:main.c        ****                         Segments_SetBrightness(Bright[0], 2);
+ 152:main.c        ****                         Segments_SetBrightness(Bright[0], 3);
+ 153:main.c        ****                         Segments_SetBrightness(Bright[0], 0);}
+ 154:main.c        ****                     if(cnt_noconf>100){
+ 155:main.c        ****                         Segments_SetBrightness(Bright[1], 1);
+ 156:main.c        ****                         Segments_SetBrightness(Bright[1], 2);
+ 157:main.c        ****                         Segments_SetBrightness(Bright[1], 3);
+ 158:main.c        ****                         Segments_SetBrightness(Bright[1], 0);
+ 159:main.c        ****                         }
+ 160:main.c        ****                     if(cnt_noconf>200)cnt_noconf=0;
+ 161:main.c        ****                     }               
+ 162:main.c        ****                 
+ 163:main.c        ****             }
+ 164:main.c        **** 
+ 165:main.c        ****         }
+ 166:main.c        ****         //-----------------------CAMBIO DE VELOCIDAD-----------------------------------------------
+ 167:main.c        ****         if(SW_vel_Read()==1)vel=100;
+ 168:main.c        ****         if(SW_vel_Read()==0)vel=500;
+ 169:main.c        **** 
+ 170:main.c        ****             
+ 171:main.c        **** //-----------------------------------------------------------------------------------------------  
+ 172:main.c        **** 
+ 173:main.c        ****     }
+ 174:main.c        **** }
+ 175:main.c        **** CY_ISR(IRQ_ISR){
+  28              		.loc 1 175 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+ 176:main.c        ****     pulsecounter++;
+  33              		.loc 1 176 0
+  34 0000 054A     		ldr	r2, .L3
+  35 0002 1378     		ldrb	r3, [r2]	@ zero_extendqisi2
+  36 0004 0133     		adds	r3, r3, #1
+  37 0006 DBB2     		uxtb	r3, r3
+  38 0008 1370     		strb	r3, [r2]
+ 177:main.c        ****     if(pulsecounter==1)band380ms=1;// Cada que sucede una pulsación, inicia el conteo de los 380 m
+  39              		.loc 1 177 0
+  40 000a 012B     		cmp	r3, #1
+  41 000c 02D1     		bne	.L1
+  42              		.loc 1 177 0 is_stmt 0 discriminator 1
+  43 000e 0122     		movs	r2, #1
+  44 0010 014B     		ldr	r3, .L3
+  45 0012 5A80     		strh	r2, [r3, #2]	@ movhi
+  46              	.L1:
+  47 0014 7047     		bx	lr
+  48              	.L4:
+  49 0016 00BF     		.align	2
+  50              	.L3:
+  51 0018 00000000 		.word	.LANCHOR0
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 5
+
+
+  52              		.cfi_endproc
+  53              	.LFE64:
+  54              		.size	IRQ_ISR, .-IRQ_ISR
+  55              		.section	.text.Timer_ISR,"ax",%progbits
+  56              		.align	2
+  57              		.global	Timer_ISR
+  58              		.thumb
+  59              		.thumb_func
+  60              		.type	Timer_ISR, %function
+  61              	Timer_ISR:
+  62              	.LFB65:
+ 178:main.c        ****     
+ 179:main.c        **** }
+ 180:main.c        **** CY_ISR(Timer_ISR){
+  63              		.loc 1 180 0 is_stmt 1
+  64              		.cfi_startproc
+  65              		@ args = 0, pretend = 0, frame = 0
+  66              		@ frame_needed = 0, uses_anonymous_args = 0
+  67              		@ link register save eliminated.
+ 181:main.c        ****     band_2mili=1; 
+  68              		.loc 1 181 0
+  69 0000 0122     		movs	r2, #1
+  70 0002 014B     		ldr	r3, .L6
+  71 0004 1A71     		strb	r2, [r3, #4]
+  72 0006 7047     		bx	lr
+  73              	.L7:
+  74              		.align	2
+  75              	.L6:
+  76 0008 00000000 		.word	.LANCHOR0
+  77              		.cfi_endproc
+  78              	.LFE65:
+  79              		.size	Timer_ISR, .-Timer_ISR
+  80              		.section	.text.main,"ax",%progbits
+  81              		.align	2
+  82              		.global	main
+  83              		.thumb
+  84              		.thumb_func
+  85              		.type	main, %function
+  86              	main:
+  87              	.LFB63:
+  32:main.c        ****     CyGlobalIntEnable; /* Enable global interrupts. */
+  88              		.loc 1 32 0
+  89              		.cfi_startproc
+  90              		@ Volatile: function does not return.
+  91              		@ args = 0, pretend = 0, frame = 0
+  92              		@ frame_needed = 0, uses_anonymous_args = 0
+  93 0000 08B5     		push	{r3, lr}
+  94              		.cfi_def_cfa_offset 8
+  95              		.cfi_offset 3, -8
+  96              		.cfi_offset 14, -4
+  33:main.c        ****     Interrupt_StartEx(IRQ_ISR);
+  97              		.loc 1 33 0
+  98              		.syntax unified
+  99              	@ 33 "main.c" 1
+ 100 0002 62B6     		CPSIE   i
+ 101              	@ 0 "" 2
+  34:main.c        ****     Timer_StartEx(Timer_ISR);
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 6
+
+
+ 102              		.loc 1 34 0
+ 103              		.thumb
+ 104              		.syntax unified
+ 105 0004 A848     		ldr	r0, .L33
+ 106 0006 FFF7FEFF 		bl	Interrupt_StartEx
+ 107              	.LVL0:
+  35:main.c        ****     Segments_Start();
+ 108              		.loc 1 35 0
+ 109 000a A848     		ldr	r0, .L33+4
+ 110 000c FFF7FEFF 		bl	Timer_StartEx
+ 111              	.LVL1:
+  36:main.c        ****     Contador_Start();
+ 112              		.loc 1 36 0
+ 113 0010 FFF7FEFF 		bl	Segments_Start
+ 114              	.LVL2:
+  37:main.c        ****     DosP_Write(0b1);
+ 115              		.loc 1 37 0
+ 116 0014 FFF7FEFF 		bl	Contador_Start
+ 117              	.LVL3:
+  38:main.c        ****     Segments_Write7SegNumberDec(0,1,3,Segments_ZERO_PAD);//Se escriben 3 ceros a la derecha en los 
+ 118              		.loc 1 38 0
+ 119 0018 0120     		movs	r0, #1
+ 120 001a FFF7FEFF 		bl	DosP_Write
+ 121              	.LVL4:
+  39:main.c        ****     
+ 122              		.loc 1 39 0
+ 123 001e 0223     		movs	r3, #2
+ 124 0020 0322     		movs	r2, #3
+ 125 0022 0121     		movs	r1, #1
+ 126 0024 0020     		movs	r0, #0
+ 127 0026 FFF7FEFF 		bl	Segments_Write7SegNumberDec
+ 128              	.LVL5:
+ 129              	.L30:
+  46:main.c        ****             band_2mili=0;
+ 130              		.loc 1 46 0
+ 131 002a A14B     		ldr	r3, .L33+8
+ 132 002c 1B79     		ldrb	r3, [r3, #4]	@ zero_extendqisi2
+ 133 002e 002B     		cmp	r3, #0
+ 134 0030 00F08A81 		beq	.L9
+  47:main.c        ****             band4seg++;
+ 135              		.loc 1 47 0
+ 136 0034 9E4B     		ldr	r3, .L33+8
+ 137 0036 0022     		movs	r2, #0
+ 138 0038 1A71     		strb	r2, [r3, #4]
+  48:main.c        ****     //-----------------------TAREA 1---------------------------------------------------------------
+ 139              		.loc 1 48 0
+ 140 003a DA88     		ldrh	r2, [r3, #6]
+ 141 003c 0132     		adds	r2, r2, #1
+ 142 003e DA80     		strh	r2, [r3, #6]	@ movhi
+  50:main.c        ****                 mili2segundos++;
+ 143              		.loc 1 50 0
+ 144 0040 FFF7FEFF 		bl	SW_Read
+ 145              	.LVL6:
+ 146 0044 0028     		cmp	r0, #0
+ 147 0046 40F08E80 		bne	.L10
+  51:main.c        ****                 Band_Final=0;
+ 148              		.loc 1 51 0
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 7
+
+
+ 149 004a 994A     		ldr	r2, .L33+8
+ 150 004c 137A     		ldrb	r3, [r2, #8]	@ zero_extendqisi2
+ 151 004e 0133     		adds	r3, r3, #1
+ 152 0050 DBB2     		uxtb	r3, r3
+ 153 0052 1372     		strb	r3, [r2, #8]
+  52:main.c        **** //                contador[1]=0;contador[2]=0;contador[3]=0;
+ 154              		.loc 1 52 0
+ 155 0054 0021     		movs	r1, #0
+ 156 0056 5172     		strb	r1, [r2, #9]
+  55:main.c        ****                 if(mili2segundos>125)Segments_SetBrightness(Bright[0],Posicion);
+ 157              		.loc 1 55 0
+ 158 0058 7D2B     		cmp	r3, #125
+ 159 005a 04D8     		bhi	.L11
+  55:main.c        ****                 if(mili2segundos>125)Segments_SetBrightness(Bright[0],Posicion);
+ 160              		.loc 1 55 0 is_stmt 0 discriminator 1
+ 161 005c 954B     		ldr	r3, .L33+12
+ 162 005e 1978     		ldrb	r1, [r3]	@ zero_extendqisi2
+ 163 0060 5879     		ldrb	r0, [r3, #5]	@ zero_extendqisi2
+ 164 0062 FFF7FEFF 		bl	Segments_SetBrightness
+ 165              	.LVL7:
+ 166              	.L11:
+  56:main.c        ****                 if(mili2segundos>250)mili2segundos=0;             
+ 167              		.loc 1 56 0 is_stmt 1
+ 168 0066 924B     		ldr	r3, .L33+8
+ 169 0068 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 170 006a 7D2B     		cmp	r3, #125
+ 171 006c 04D9     		bls	.L12
+  56:main.c        ****                 if(mili2segundos>250)mili2segundos=0;             
+ 172              		.loc 1 56 0 is_stmt 0 discriminator 1
+ 173 006e 914B     		ldr	r3, .L33+12
+ 174 0070 1978     		ldrb	r1, [r3]	@ zero_extendqisi2
+ 175 0072 1879     		ldrb	r0, [r3, #4]	@ zero_extendqisi2
+ 176 0074 FFF7FEFF 		bl	Segments_SetBrightness
+ 177              	.LVL8:
+ 178              	.L12:
+  57:main.c        ****     //-----------------------4SEGUNDOS-------------------------------------------------------------
+ 179              		.loc 1 57 0 is_stmt 1
+ 180 0078 8D4B     		ldr	r3, .L33+8
+ 181 007a 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 182 007c FA2B     		cmp	r3, #250
+ 183 007e 02D9     		bls	.L13
+  57:main.c        ****     //-----------------------4SEGUNDOS-------------------------------------------------------------
+ 184              		.loc 1 57 0 is_stmt 0 discriminator 1
+ 185 0080 0022     		movs	r2, #0
+ 186 0082 8B4B     		ldr	r3, .L33+8
+ 187 0084 1A72     		strb	r2, [r3, #8]
+ 188              	.L13:
+  59:main.c        ****                     band4seg=0;
+ 189              		.loc 1 59 0 is_stmt 1
+ 190 0086 8A4B     		ldr	r3, .L33+8
+ 191 0088 DB88     		ldrh	r3, [r3, #6]
+ 192 008a B3F5FA6F 		cmp	r3, #2000
+ 193 008e 16D1     		bne	.L14
+  60:main.c        ****                     Segments_SetBrightness(Bright[1],Posicion);
+ 194              		.loc 1 60 0
+ 195 0090 0022     		movs	r2, #0
+ 196 0092 874B     		ldr	r3, .L33+8
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 8
+
+
+ 197 0094 DA80     		strh	r2, [r3, #6]	@ movhi
+  61:main.c        **** 
+ 198              		.loc 1 61 0
+ 199 0096 874C     		ldr	r4, .L33+12
+ 200 0098 2178     		ldrb	r1, [r4]	@ zero_extendqisi2
+ 201 009a 6079     		ldrb	r0, [r4, #5]	@ zero_extendqisi2
+ 202 009c FFF7FEFF 		bl	Segments_SetBrightness
+ 203              	.LVL9:
+  63:main.c        ****                         Posicion=0;  
+ 204              		.loc 1 63 0
+ 205 00a0 2378     		ldrb	r3, [r4]	@ zero_extendqisi2
+ 206 00a2 032B     		cmp	r3, #3
+ 207 00a4 04D1     		bne	.L15
+  64:main.c        ****                         configuration=1;   
+ 208              		.loc 1 64 0
+ 209 00a6 0022     		movs	r2, #0
+ 210 00a8 2270     		strb	r2, [r4]
+  65:main.c        ****                     }
+ 211              		.loc 1 65 0
+ 212 00aa 0122     		movs	r2, #1
+ 213 00ac 804B     		ldr	r3, .L33+8
+ 214 00ae 9A72     		strb	r2, [r3, #10]
+ 215              	.L15:
+  67:main.c        ****                     Posicion++;
+ 216              		.loc 1 67 0
+ 217 00b0 0022     		movs	r2, #0
+ 218 00b2 7F4B     		ldr	r3, .L33+8
+ 219 00b4 1A72     		strb	r2, [r3, #8]
+  68:main.c        ****                 }
+ 220              		.loc 1 68 0
+ 221 00b6 7F4A     		ldr	r2, .L33+12
+ 222 00b8 1378     		ldrb	r3, [r2]	@ zero_extendqisi2
+ 223 00ba 0133     		adds	r3, r3, #1
+ 224 00bc 1370     		strb	r3, [r2]
+ 225              	.L14:
+  72:main.c        ****                     cnt++;
+ 226              		.loc 1 72 0
+ 227 00be 7C4B     		ldr	r3, .L33+8
+ 228 00c0 5B88     		ldrh	r3, [r3, #2]
+ 229 00c2 002B     		cmp	r3, #0
+ 230 00c4 4FD0     		beq	.L10
+  73:main.c        ****                     band4seg=0;
+ 231              		.loc 1 73 0
+ 232 00c6 7A4A     		ldr	r2, .L33+8
+ 233 00c8 9389     		ldrh	r3, [r2, #12]
+ 234 00ca 0133     		adds	r3, r3, #1
+ 235 00cc 9BB2     		uxth	r3, r3
+ 236 00ce 9381     		strh	r3, [r2, #12]	@ movhi
+  74:main.c        ****                     if(pulsecounter==1 && cnt>=190){
+ 237              		.loc 1 74 0
+ 238 00d0 0021     		movs	r1, #0
+ 239 00d2 D180     		strh	r1, [r2, #6]	@ movhi
+  75:main.c        ****                         if(contador[1]>=2)contador[1]=-1;// Definición de limites de los minutos y
+ 240              		.loc 1 75 0
+ 241 00d4 1278     		ldrb	r2, [r2]	@ zero_extendqisi2
+ 242 00d6 012A     		cmp	r2, #1
+ 243 00d8 27D1     		bne	.L16
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 9
+
+
+  75:main.c        ****                         if(contador[1]>=2)contador[1]=-1;// Definición de limites de los minutos y
+ 244              		.loc 1 75 0 is_stmt 0 discriminator 1
+ 245 00da BD2B     		cmp	r3, #189
+ 246 00dc 25D9     		bls	.L16
+  76:main.c        ****                         if(contador[2]>=5)contador[2]=-1;
+ 247              		.loc 1 76 0 is_stmt 1
+ 248 00de 744B     		ldr	r3, .L33+8
+ 249 00e0 5B7C     		ldrb	r3, [r3, #17]	@ zero_extendqisi2
+ 250 00e2 012B     		cmp	r3, #1
+ 251 00e4 02D9     		bls	.L17
+  76:main.c        ****                         if(contador[2]>=5)contador[2]=-1;
+ 252              		.loc 1 76 0 is_stmt 0 discriminator 1
+ 253 00e6 FF22     		movs	r2, #255
+ 254 00e8 714B     		ldr	r3, .L33+8
+ 255 00ea 5A74     		strb	r2, [r3, #17]
+ 256              	.L17:
+  77:main.c        ****                         if(contador[3]>=9)contador[3]=-1;                      
+ 257              		.loc 1 77 0 is_stmt 1
+ 258 00ec 704B     		ldr	r3, .L33+8
+ 259 00ee 9B7C     		ldrb	r3, [r3, #18]	@ zero_extendqisi2
+ 260 00f0 042B     		cmp	r3, #4
+ 261 00f2 02D9     		bls	.L18
+  77:main.c        ****                         if(contador[3]>=9)contador[3]=-1;                      
+ 262              		.loc 1 77 0 is_stmt 0 discriminator 1
+ 263 00f4 FF22     		movs	r2, #255
+ 264 00f6 6E4B     		ldr	r3, .L33+8
+ 265 00f8 9A74     		strb	r2, [r3, #18]
+ 266              	.L18:
+  78:main.c        ****                         contador[Posicion]++;// Si se cumple la condición se cambia de posición
+ 267              		.loc 1 78 0 is_stmt 1
+ 268 00fa 6D4B     		ldr	r3, .L33+8
+ 269 00fc DB7C     		ldrb	r3, [r3, #19]	@ zero_extendqisi2
+ 270 00fe 082B     		cmp	r3, #8
+ 271 0100 02D9     		bls	.L19
+  78:main.c        ****                         contador[Posicion]++;// Si se cumple la condición se cambia de posición
+ 272              		.loc 1 78 0 is_stmt 0 discriminator 1
+ 273 0102 FF22     		movs	r2, #255
+ 274 0104 6A4B     		ldr	r3, .L33+8
+ 275 0106 DA74     		strb	r2, [r3, #19]
+ 276              	.L19:
+  79:main.c        ****                         Segments_Write7SegDigitDec(contador[Posicion],Posicion); // Se escribe el v
+ 277              		.loc 1 79 0 is_stmt 1
+ 278 0108 6A4B     		ldr	r3, .L33+12
+ 279 010a 1978     		ldrb	r1, [r3]	@ zero_extendqisi2
+ 280 010c 684C     		ldr	r4, .L33+8
+ 281 010e 6318     		adds	r3, r4, r1
+ 282 0110 187C     		ldrb	r0, [r3, #16]	@ zero_extendqisi2
+ 283 0112 0130     		adds	r0, r0, #1
+ 284 0114 C0B2     		uxtb	r0, r0
+ 285 0116 1874     		strb	r0, [r3, #16]
+  80:main.c        ****                         
+ 286              		.loc 1 80 0
+ 287 0118 FFF7FEFF 		bl	Segments_Write7SegDigitDec
+ 288              	.LVL10:
+  82:main.c        ****                         pulsecounter=0;
+ 289              		.loc 1 82 0
+ 290 011c 0023     		movs	r3, #0
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 10
+
+
+ 291 011e A381     		strh	r3, [r4, #12]	@ movhi
+  83:main.c        ****                         band4seg=0;
+ 292              		.loc 1 83 0
+ 293 0120 2370     		strb	r3, [r4]
+  84:main.c        ****                         band380ms=0;
+ 294              		.loc 1 84 0
+ 295 0122 E380     		strh	r3, [r4, #6]	@ movhi
+  85:main.c        ****                         mili2segundos=0;
+ 296              		.loc 1 85 0
+ 297 0124 6380     		strh	r3, [r4, #2]	@ movhi
+  86:main.c        ****                     }
+ 298              		.loc 1 86 0
+ 299 0126 2372     		strb	r3, [r4, #8]
+ 300 0128 1DE0     		b	.L10
+ 301              	.L16:
+  88:main.c        ****                         cnt=0; // Si hay dos pulsaciones se reinicia el contador
+ 302              		.loc 1 88 0
+ 303 012a 022A     		cmp	r2, #2
+ 304 012c 1BD1     		bne	.L10
+  88:main.c        ****                         cnt=0; // Si hay dos pulsaciones se reinicia el contador
+ 305              		.loc 1 88 0 is_stmt 0 discriminator 1
+ 306 012e BD2B     		cmp	r3, #189
+ 307 0130 19D8     		bhi	.L10
+  89:main.c        ****                         Segments_SetBrightness(Bright[1],Posicion);                        
+ 308              		.loc 1 89 0 is_stmt 1
+ 309 0132 0022     		movs	r2, #0
+ 310 0134 5E4B     		ldr	r3, .L33+8
+ 311 0136 9A81     		strh	r2, [r3, #12]	@ movhi
+  90:main.c        ****                         if(Posicion==3){
+ 312              		.loc 1 90 0
+ 313 0138 5E4C     		ldr	r4, .L33+12
+ 314 013a 2178     		ldrb	r1, [r4]	@ zero_extendqisi2
+ 315 013c 6079     		ldrb	r0, [r4, #5]	@ zero_extendqisi2
+ 316 013e FFF7FEFF 		bl	Segments_SetBrightness
+ 317              	.LVL11:
+  91:main.c        ****                             Posicion=0;
+ 318              		.loc 1 91 0
+ 319 0142 2378     		ldrb	r3, [r4]	@ zero_extendqisi2
+ 320 0144 032B     		cmp	r3, #3
+ 321 0146 04D1     		bne	.L20
+  92:main.c        ****                             configuration=1; }
+ 322              		.loc 1 92 0
+ 323 0148 0022     		movs	r2, #0
+ 324 014a 2270     		strb	r2, [r4]
+  93:main.c        ****                         Posicion++;
+ 325              		.loc 1 93 0
+ 326 014c 0122     		movs	r2, #1
+ 327 014e 584B     		ldr	r3, .L33+8
+ 328 0150 9A72     		strb	r2, [r3, #10]
+ 329              	.L20:
+  94:main.c        ****                         pulsecounter=0;
+ 330              		.loc 1 94 0
+ 331 0152 584A     		ldr	r2, .L33+12
+ 332 0154 1378     		ldrb	r3, [r2]	@ zero_extendqisi2
+ 333 0156 0133     		adds	r3, r3, #1
+ 334 0158 1370     		strb	r3, [r2]
+  95:main.c        ****                         band380ms=0;
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 11
+
+
+ 335              		.loc 1 95 0
+ 336 015a 554B     		ldr	r3, .L33+8
+ 337 015c 0022     		movs	r2, #0
+ 338 015e 1A70     		strb	r2, [r3]
+  96:main.c        ****                         band4seg=0;
+ 339              		.loc 1 96 0
+ 340 0160 5A80     		strh	r2, [r3, #2]	@ movhi
+  97:main.c        ****                         mili2segundos=0;//               
+ 341              		.loc 1 97 0
+ 342 0162 DA80     		strh	r2, [r3, #6]	@ movhi
+  98:main.c        ****                     }
+ 343              		.loc 1 98 0
+ 344 0164 1A72     		strb	r2, [r3, #8]
+ 345              	.L10:
+ 104:main.c        ****                 if(configuration==1){
+ 346              		.loc 1 104 0
+ 347 0166 FFF7FEFF 		bl	SW_Read
+ 348              	.LVL12:
+ 349 016a 0028     		cmp	r0, #0
+ 350 016c 00F0EC80 		beq	.L9
+ 105:main.c        ****                     cnt_time++;
+ 351              		.loc 1 105 0
+ 352 0170 4F4B     		ldr	r3, .L33+8
+ 353 0172 9B7A     		ldrb	r3, [r3, #10]	@ zero_extendqisi2
+ 354 0174 012B     		cmp	r3, #1
+ 355 0176 40F0A580 		bne	.L21
+ 106:main.c        ****                     Segments_SetBrightness(Bright[0],0);
+ 356              		.loc 1 106 0
+ 357 017a 4F4A     		ldr	r2, .L33+16
+ 358 017c 1388     		ldrh	r3, [r2]
+ 359 017e 0133     		adds	r3, r3, #1
+ 360 0180 1380     		strh	r3, [r2]	@ movhi
+ 107:main.c        ****                     Segments_SetBrightness(Bright[1],1);
+ 361              		.loc 1 107 0
+ 362 0182 4C4C     		ldr	r4, .L33+12
+ 363 0184 0021     		movs	r1, #0
+ 364 0186 2079     		ldrb	r0, [r4, #4]	@ zero_extendqisi2
+ 365 0188 FFF7FEFF 		bl	Segments_SetBrightness
+ 366              	.LVL13:
+ 108:main.c        ****                     Segments_SetBrightness(Bright[1],2);
+ 367              		.loc 1 108 0
+ 368 018c 0121     		movs	r1, #1
+ 369 018e 6079     		ldrb	r0, [r4, #5]	@ zero_extendqisi2
+ 370 0190 FFF7FEFF 		bl	Segments_SetBrightness
+ 371              	.LVL14:
+ 109:main.c        ****                     Segments_SetBrightness(Bright[1],3);
+ 372              		.loc 1 109 0
+ 373 0194 0221     		movs	r1, #2
+ 374 0196 6079     		ldrb	r0, [r4, #5]	@ zero_extendqisi2
+ 375 0198 FFF7FEFF 		bl	Segments_SetBrightness
+ 376              	.LVL15:
+ 110:main.c        ****                     //--------BUZZER----------------------------
+ 377              		.loc 1 110 0
+ 378 019c 0321     		movs	r1, #3
+ 379 019e 6079     		ldrb	r0, [r4, #5]	@ zero_extendqisi2
+ 380 01a0 FFF7FEFF 		bl	Segments_SetBrightness
+ 381              	.LVL16:
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 12
+
+
+ 112:main.c        ****                         if(contador[3]%5==0)Buzzer_Write(1);
+ 382              		.loc 1 112 0
+ 383 01a4 FFF7FEFF 		bl	SW_buzz_Read
+ 384              	.LVL17:
+ 385 01a8 0128     		cmp	r0, #1
+ 386 01aa 12D1     		bne	.L22
+ 113:main.c        ****                         else Buzzer_Write(0);
+ 387              		.loc 1 113 0
+ 388 01ac 404B     		ldr	r3, .L33+8
+ 389 01ae DA7C     		ldrb	r2, [r3, #19]	@ zero_extendqisi2
+ 390 01b0 424B     		ldr	r3, .L33+20
+ 391 01b2 A3FB0213 		umull	r1, r3, r3, r2
+ 392 01b6 9B08     		lsrs	r3, r3, #2
+ 393 01b8 03EB8303 		add	r3, r3, r3, lsl #2
+ 394 01bc D31A     		subs	r3, r2, r3
+ 395 01be 13F0FF0F 		tst	r3, #255
+ 396 01c2 02D1     		bne	.L23
+ 113:main.c        ****                         else Buzzer_Write(0);
+ 397              		.loc 1 113 0 is_stmt 0 discriminator 1
+ 398 01c4 FFF7FEFF 		bl	Buzzer_Write
+ 399              	.LVL18:
+ 400 01c8 06E0     		b	.L24
+ 401              	.L23:
+ 114:main.c        ****                     }else Buzzer_Write(0);
+ 402              		.loc 1 114 0 is_stmt 1
+ 403 01ca 0020     		movs	r0, #0
+ 404 01cc FFF7FEFF 		bl	Buzzer_Write
+ 405              	.LVL19:
+ 406 01d0 02E0     		b	.L24
+ 407              	.L22:
+ 115:main.c        ****                     
+ 408              		.loc 1 115 0
+ 409 01d2 0020     		movs	r0, #0
+ 410 01d4 FFF7FEFF 		bl	Buzzer_Write
+ 411              	.LVL20:
+ 412              	.L24:
+ 119:main.c        ****                     if(cnt_time>=vel){
+ 413              		.loc 1 119 0
+ 414 01d8 364C     		ldr	r4, .L33+12
+ 415 01da 0121     		movs	r1, #1
+ 416 01dc 6079     		ldrb	r0, [r4, #5]	@ zero_extendqisi2
+ 417 01de FFF7FEFF 		bl	Segments_SetBrightness
+ 418              	.LVL21:
+ 120:main.c        ****                         cnt_time=0; // Se reinicia el contador
+ 419              		.loc 1 120 0
+ 420 01e2 354B     		ldr	r3, .L33+16
+ 421 01e4 1A88     		ldrh	r2, [r3]
+ 422 01e6 E388     		ldrh	r3, [r4, #6]
+ 423 01e8 9A42     		cmp	r2, r3
+ 424 01ea 3FD3     		bcc	.L25
+ 121:main.c        ****                         
+ 425              		.loc 1 121 0
+ 426 01ec 0022     		movs	r2, #0
+ 427 01ee 324B     		ldr	r3, .L33+16
+ 428 01f0 1A80     		strh	r2, [r3]	@ movhi
+ 123:main.c        ****                         T_tiempo--;// Se va restando cada vez
+ 429              		.loc 1 123 0
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 13
+
+
+ 430 01f2 2F4C     		ldr	r4, .L33+8
+ 431 01f4 617C     		ldrb	r1, [r4, #17]	@ zero_extendqisi2
+ 432 01f6 A37C     		ldrb	r3, [r4, #18]	@ zero_extendqisi2
+ 433 01f8 E27C     		ldrb	r2, [r4, #19]	@ zero_extendqisi2
+ 434 01fa C1EB0111 		rsb	r1, r1, r1, lsl #4
+ 435 01fe 03EB8303 		add	r3, r3, r3, lsl #2
+ 436 0202 5B00     		lsls	r3, r3, #1
+ 437 0204 03EB8103 		add	r3, r3, r1, lsl #2
+ 438 0208 1A44     		add	r2, r2, r3
+ 439 020a 92B2     		uxth	r2, r2
+ 124:main.c        ****                         contador[1]= T_tiempo/60;// Minutos
+ 440              		.loc 1 124 0
+ 441 020c 013A     		subs	r2, r2, #1
+ 442 020e 92B2     		uxth	r2, r2
+ 443 0210 A282     		strh	r2, [r4, #20]	@ movhi
+ 125:main.c        ****                         contador[2]=(T_tiempo%60)/10;// Corresponde a decenas de segundos
+ 444              		.loc 1 125 0
+ 445 0212 2B4B     		ldr	r3, .L33+24
+ 446 0214 A3FB0213 		umull	r1, r3, r3, r2
+ 447 0218 5B09     		lsrs	r3, r3, #5
+ 448 021a D8B2     		uxtb	r0, r3
+ 449 021c 6074     		strb	r0, [r4, #17]
+ 126:main.c        ****                         contador[3]=T_tiempo%10;// Segundos
+ 450              		.loc 1 126 0
+ 451 021e C3EB0313 		rsb	r3, r3, r3, lsl #4
+ 452 0222 A2EB8303 		sub	r3, r2, r3, lsl #2
+ 453 0226 9BB2     		uxth	r3, r3
+ 454 0228 2449     		ldr	r1, .L33+20
+ 455 022a A1FB03E3 		umull	lr, r3, r1, r3
+ 456 022e DB08     		lsrs	r3, r3, #3
+ 457 0230 A374     		strb	r3, [r4, #18]
+ 127:main.c        ****                         Segments_Write7SegDigitDec(contador[1],1);
+ 458              		.loc 1 127 0
+ 459 0232 A1FB0213 		umull	r1, r3, r1, r2
+ 460 0236 DB08     		lsrs	r3, r3, #3
+ 461 0238 03EB8303 		add	r3, r3, r3, lsl #2
+ 462 023c A2EB4303 		sub	r3, r2, r3, lsl #1
+ 463 0240 E374     		strb	r3, [r4, #19]
+ 128:main.c        ****                         Segments_Write7SegDigitDec(contador[2],2);
+ 464              		.loc 1 128 0
+ 465 0242 0121     		movs	r1, #1
+ 466 0244 FFF7FEFF 		bl	Segments_Write7SegDigitDec
+ 467              	.LVL22:
+ 129:main.c        ****                         Segments_Write7SegDigitDec(contador[3],3);
+ 468              		.loc 1 129 0
+ 469 0248 0221     		movs	r1, #2
+ 470 024a A07C     		ldrb	r0, [r4, #18]	@ zero_extendqisi2
+ 471 024c FFF7FEFF 		bl	Segments_Write7SegDigitDec
+ 472              	.LVL23:
+ 130:main.c        ****                         if(contador[1]==0 && contador[2]==0 && contador[3]==0){// Si todo se cumple
+ 473              		.loc 1 130 0
+ 474 0250 0321     		movs	r1, #3
+ 475 0252 E07C     		ldrb	r0, [r4, #19]	@ zero_extendqisi2
+ 476 0254 FFF7FEFF 		bl	Segments_Write7SegDigitDec
+ 477              	.LVL24:
+ 131:main.c        ****                             configuration=0;
+ 478              		.loc 1 131 0
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 14
+
+
+ 479 0258 637C     		ldrb	r3, [r4, #17]	@ zero_extendqisi2
+ 480 025a 3BB9     		cbnz	r3, .L25
+ 131:main.c        ****                             configuration=0;
+ 481              		.loc 1 131 0 is_stmt 0 discriminator 1
+ 482 025c A37C     		ldrb	r3, [r4, #18]	@ zero_extendqisi2
+ 483 025e 2BB9     		cbnz	r3, .L25
+ 131:main.c        ****                             configuration=0;
+ 484              		.loc 1 131 0 discriminator 2
+ 485 0260 E37C     		ldrb	r3, [r4, #19]	@ zero_extendqisi2
+ 486 0262 1BB9     		cbnz	r3, .L25
+ 132:main.c        ****                             Band_Final=1;}
+ 487              		.loc 1 132 0 is_stmt 1
+ 488 0264 0022     		movs	r2, #0
+ 489 0266 A272     		strb	r2, [r4, #10]
+ 133:main.c        ****                     }
+ 490              		.loc 1 133 0
+ 491 0268 0122     		movs	r2, #1
+ 492 026a 6272     		strb	r2, [r4, #9]
+ 493              	.L25:
+ 137:main.c        ****                         LEDS_Write(1);
+ 494              		.loc 1 137 0
+ 495 026c 104B     		ldr	r3, .L33+8
+ 496 026e 5B7A     		ldrb	r3, [r3, #9]	@ zero_extendqisi2
+ 497 0270 012B     		cmp	r3, #1
+ 498 0272 10D1     		bne	.L26
+ 138:main.c        ****                         Buzzer_Write(0);
+ 499              		.loc 1 138 0
+ 500 0274 0120     		movs	r0, #1
+ 501 0276 FFF7FEFF 		bl	LEDS_Write
+ 502              	.LVL25:
+ 139:main.c        ****                         Segments_SetBrightness(Bright[1],0);
+ 503              		.loc 1 139 0
+ 504 027a 0020     		movs	r0, #0
+ 505 027c FFF7FEFF 		bl	Buzzer_Write
+ 506              	.LVL26:
+ 140:main.c        ****                         Segments_Write7SegNumberDec(0,0,4,Segments_ZERO_PAD);
+ 507              		.loc 1 140 0
+ 508 0280 0021     		movs	r1, #0
+ 509 0282 0C4B     		ldr	r3, .L33+12
+ 510 0284 5879     		ldrb	r0, [r3, #5]	@ zero_extendqisi2
+ 511 0286 FFF7FEFF 		bl	Segments_SetBrightness
+ 512              	.LVL27:
+ 141:main.c        ****                     }if(SW_Read()==0)configuration=0;
+ 513              		.loc 1 141 0
+ 514 028a 0223     		movs	r3, #2
+ 515 028c 0422     		movs	r2, #4
+ 516 028e 0021     		movs	r1, #0
+ 517 0290 0846     		mov	r0, r1
+ 518 0292 FFF7FEFF 		bl	Segments_Write7SegNumberDec
+ 519              	.LVL28:
+ 520              	.L26:
+ 142:main.c        ****                 }
+ 521              		.loc 1 142 0
+ 522 0296 FFF7FEFF 		bl	SW_Read
+ 523              	.LVL29:
+ 524 029a 0028     		cmp	r0, #0
+ 525 029c 54D1     		bne	.L9
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 15
+
+
+ 142:main.c        ****                 }
+ 526              		.loc 1 142 0 is_stmt 0 discriminator 1
+ 527 029e 0022     		movs	r2, #0
+ 528 02a0 034B     		ldr	r3, .L33+8
+ 529 02a2 9A72     		strb	r2, [r3, #10]
+ 530 02a4 50E0     		b	.L9
+ 531              	.L34:
+ 532 02a6 00BF     		.align	2
+ 533              	.L33:
+ 534 02a8 00000000 		.word	IRQ_ISR
+ 535 02ac 00000000 		.word	Timer_ISR
+ 536 02b0 00000000 		.word	.LANCHOR0
+ 537 02b4 00000000 		.word	.LANCHOR1
+ 538 02b8 00000000 		.word	cnt_time
+ 539 02bc CDCCCCCC 		.word	-858993459
+ 540 02c0 89888888 		.word	-2004318071
+ 541              	.L21:
+ 144:main.c        ****                     band4seg=0;
+ 542              		.loc 1 144 0 is_stmt 1
+ 543 02c4 002B     		cmp	r3, #0
+ 544 02c6 3FD1     		bne	.L9
+ 144:main.c        ****                     band4seg=0;
+ 545              		.loc 1 144 0 is_stmt 0 discriminator 1
+ 546 02c8 284B     		ldr	r3, .L35
+ 547 02ca 5B7A     		ldrb	r3, [r3, #9]	@ zero_extendqisi2
+ 548 02cc 002B     		cmp	r3, #0
+ 549 02ce 3BD1     		bne	.L9
+ 145:main.c        ****                     cnt_noconf++;// Contador para cuando no esta configurado
+ 550              		.loc 1 145 0 is_stmt 1
+ 551 02d0 0020     		movs	r0, #0
+ 552 02d2 264B     		ldr	r3, .L35
+ 553 02d4 D880     		strh	r0, [r3, #6]	@ movhi
+ 146:main.c        ****                     Segments_Write7SegNumberDec(0,0,4,Segments_ZERO_PAD);
+ 554              		.loc 1 146 0
+ 555 02d6 264C     		ldr	r4, .L35+4
+ 556 02d8 2388     		ldrh	r3, [r4]
+ 557 02da 0133     		adds	r3, r3, #1
+ 558 02dc 2380     		strh	r3, [r4]	@ movhi
+ 147:main.c        ****                     
+ 559              		.loc 1 147 0
+ 560 02de 0223     		movs	r3, #2
+ 561 02e0 0422     		movs	r2, #4
+ 562 02e2 0146     		mov	r1, r0
+ 563 02e4 FFF7FEFF 		bl	Segments_Write7SegNumberDec
+ 564              	.LVL30:
+ 149:main.c        ****                         Segments_SetBrightness(Bright[0], 1);
+ 565              		.loc 1 149 0
+ 566 02e8 2388     		ldrh	r3, [r4]
+ 567 02ea 642B     		cmp	r3, #100
+ 568 02ec 10D8     		bhi	.L27
+ 150:main.c        ****                         Segments_SetBrightness(Bright[0], 2);
+ 569              		.loc 1 150 0
+ 570 02ee 214C     		ldr	r4, .L35+8
+ 571 02f0 0121     		movs	r1, #1
+ 572 02f2 2079     		ldrb	r0, [r4, #4]	@ zero_extendqisi2
+ 573 02f4 FFF7FEFF 		bl	Segments_SetBrightness
+ 574              	.LVL31:
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 16
+
+
+ 151:main.c        ****                         Segments_SetBrightness(Bright[0], 3);
+ 575              		.loc 1 151 0
+ 576 02f8 0221     		movs	r1, #2
+ 577 02fa 2079     		ldrb	r0, [r4, #4]	@ zero_extendqisi2
+ 578 02fc FFF7FEFF 		bl	Segments_SetBrightness
+ 579              	.LVL32:
+ 152:main.c        ****                         Segments_SetBrightness(Bright[0], 0);}
+ 580              		.loc 1 152 0
+ 581 0300 0321     		movs	r1, #3
+ 582 0302 2079     		ldrb	r0, [r4, #4]	@ zero_extendqisi2
+ 583 0304 FFF7FEFF 		bl	Segments_SetBrightness
+ 584              	.LVL33:
+ 153:main.c        ****                     if(cnt_noconf>100){
+ 585              		.loc 1 153 0
+ 586 0308 0021     		movs	r1, #0
+ 587 030a 2079     		ldrb	r0, [r4, #4]	@ zero_extendqisi2
+ 588 030c FFF7FEFF 		bl	Segments_SetBrightness
+ 589              	.LVL34:
+ 590              	.L27:
+ 154:main.c        ****                         Segments_SetBrightness(Bright[1], 1);
+ 591              		.loc 1 154 0
+ 592 0310 174B     		ldr	r3, .L35+4
+ 593 0312 1B88     		ldrh	r3, [r3]
+ 594 0314 642B     		cmp	r3, #100
+ 595 0316 10D9     		bls	.L28
+ 155:main.c        ****                         Segments_SetBrightness(Bright[1], 2);
+ 596              		.loc 1 155 0
+ 597 0318 164C     		ldr	r4, .L35+8
+ 598 031a 0121     		movs	r1, #1
+ 599 031c 6079     		ldrb	r0, [r4, #5]	@ zero_extendqisi2
+ 600 031e FFF7FEFF 		bl	Segments_SetBrightness
+ 601              	.LVL35:
+ 156:main.c        ****                         Segments_SetBrightness(Bright[1], 3);
+ 602              		.loc 1 156 0
+ 603 0322 0221     		movs	r1, #2
+ 604 0324 6079     		ldrb	r0, [r4, #5]	@ zero_extendqisi2
+ 605 0326 FFF7FEFF 		bl	Segments_SetBrightness
+ 606              	.LVL36:
+ 157:main.c        ****                         Segments_SetBrightness(Bright[1], 0);
+ 607              		.loc 1 157 0
+ 608 032a 0321     		movs	r1, #3
+ 609 032c 6079     		ldrb	r0, [r4, #5]	@ zero_extendqisi2
+ 610 032e FFF7FEFF 		bl	Segments_SetBrightness
+ 611              	.LVL37:
+ 158:main.c        ****                         }
+ 612              		.loc 1 158 0
+ 613 0332 0021     		movs	r1, #0
+ 614 0334 6079     		ldrb	r0, [r4, #5]	@ zero_extendqisi2
+ 615 0336 FFF7FEFF 		bl	Segments_SetBrightness
+ 616              	.LVL38:
+ 617              	.L28:
+ 160:main.c        ****                     }               
+ 618              		.loc 1 160 0
+ 619 033a 0D4B     		ldr	r3, .L35+4
+ 620 033c 1B88     		ldrh	r3, [r3]
+ 621 033e C82B     		cmp	r3, #200
+ 622 0340 02D9     		bls	.L9
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 17
+
+
+ 160:main.c        ****                     }               
+ 623              		.loc 1 160 0 is_stmt 0 discriminator 1
+ 624 0342 0022     		movs	r2, #0
+ 625 0344 0A4B     		ldr	r3, .L35+4
+ 626 0346 1A80     		strh	r2, [r3]	@ movhi
+ 627              	.L9:
+ 167:main.c        ****         if(SW_vel_Read()==0)vel=500;
+ 628              		.loc 1 167 0 is_stmt 1
+ 629 0348 FFF7FEFF 		bl	SW_vel_Read
+ 630              	.LVL39:
+ 631 034c 0128     		cmp	r0, #1
+ 632 034e 02D1     		bne	.L29
+ 167:main.c        ****         if(SW_vel_Read()==0)vel=500;
+ 633              		.loc 1 167 0 is_stmt 0 discriminator 1
+ 634 0350 6422     		movs	r2, #100
+ 635 0352 084B     		ldr	r3, .L35+8
+ 636 0354 DA80     		strh	r2, [r3, #6]	@ movhi
+ 637              	.L29:
+ 168:main.c        **** 
+ 638              		.loc 1 168 0 is_stmt 1
+ 639 0356 FFF7FEFF 		bl	SW_vel_Read
+ 640              	.LVL40:
+ 641 035a 0028     		cmp	r0, #0
+ 642 035c 7FF465AE 		bne	.L30
+ 168:main.c        **** 
+ 643              		.loc 1 168 0 is_stmt 0 discriminator 1
+ 644 0360 4FF4FA72 		mov	r2, #500
+ 645 0364 034B     		ldr	r3, .L35+8
+ 646 0366 DA80     		strh	r2, [r3, #6]	@ movhi
+ 647 0368 5FE6     		b	.L30
+ 648              	.L36:
+ 649 036a 00BF     		.align	2
+ 650              	.L35:
+ 651 036c 00000000 		.word	.LANCHOR0
+ 652 0370 00000000 		.word	cnt_noconf
+ 653 0374 00000000 		.word	.LANCHOR1
+ 654              		.cfi_endproc
+ 655              	.LFE63:
+ 656              		.size	main, .-main
+ 657              		.comm	cnt_time,2,2
+ 658              		.global	Band_Final
+ 659              		.global	band_tarea1
+ 660              		.comm	cnt_noconf,2,2
+ 661              		.global	vel
+ 662              		.global	bandseg
+ 663              		.global	T_tiempo
+ 664              		.global	Segundos
+ 665              		.global	configuration
+ 666              		.global	cnt
+ 667              		.global	band4seg
+ 668              		.global	BandeBrillo
+ 669              		.global	Bright
+ 670              		.global	cnt4seg
+ 671              		.global	contador
+ 672              		.global	Posicion
+ 673              		.global	pulsecounter
+ 674              		.global	mili2segundos
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 18
+
+
+ 675              		.global	band380ms
+ 676              		.global	TitileoSingularDespla
+ 677              		.global	band_2mili
+ 678              		.data
+ 679              		.align	2
+ 680              		.set	.LANCHOR1,. + 0
+ 681              		.type	Posicion, %object
+ 682              		.size	Posicion, 1
+ 683              	Posicion:
+ 684 0000 01       		.byte	1
+ 685 0001 000000   		.space	3
+ 686              		.type	Bright, %object
+ 687              		.size	Bright, 2
+ 688              	Bright:
+ 689 0004 00       		.byte	0
+ 690 0005 FF       		.byte	-1
+ 691              		.type	vel, %object
+ 692              		.size	vel, 2
+ 693              	vel:
+ 694 0006 F401     		.short	500
+ 695              		.bss
+ 696              		.align	2
+ 697              		.set	.LANCHOR0,. + 0
+ 698              		.type	pulsecounter, %object
+ 699              		.size	pulsecounter, 1
+ 700              	pulsecounter:
+ 701 0000 00       		.space	1
+ 702 0001 00       		.space	1
+ 703              		.type	band380ms, %object
+ 704              		.size	band380ms, 2
+ 705              	band380ms:
+ 706 0002 0000     		.space	2
+ 707              		.type	band_2mili, %object
+ 708              		.size	band_2mili, 1
+ 709              	band_2mili:
+ 710 0004 00       		.space	1
+ 711 0005 00       		.space	1
+ 712              		.type	band4seg, %object
+ 713              		.size	band4seg, 2
+ 714              	band4seg:
+ 715 0006 0000     		.space	2
+ 716              		.type	mili2segundos, %object
+ 717              		.size	mili2segundos, 1
+ 718              	mili2segundos:
+ 719 0008 00       		.space	1
+ 720              		.type	Band_Final, %object
+ 721              		.size	Band_Final, 1
+ 722              	Band_Final:
+ 723 0009 00       		.space	1
+ 724              		.type	configuration, %object
+ 725              		.size	configuration, 1
+ 726              	configuration:
+ 727 000a 00       		.space	1
+ 728 000b 00       		.space	1
+ 729              		.type	cnt, %object
+ 730              		.size	cnt, 2
+ 731              	cnt:
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 19
+
+
+ 732 000c 0000     		.space	2
+ 733 000e 0000     		.space	2
+ 734              		.type	contador, %object
+ 735              		.size	contador, 4
+ 736              	contador:
+ 737 0010 00000000 		.space	4
+ 738              		.type	T_tiempo, %object
+ 739              		.size	T_tiempo, 2
+ 740              	T_tiempo:
+ 741 0014 0000     		.space	2
+ 742              		.type	band_tarea1, %object
+ 743              		.size	band_tarea1, 1
+ 744              	band_tarea1:
+ 745 0016 00       		.space	1
+ 746 0017 00       		.space	1
+ 747              		.type	bandseg, %object
+ 748              		.size	bandseg, 2
+ 749              	bandseg:
+ 750 0018 0000     		.space	2
+ 751              		.type	Segundos, %object
+ 752              		.size	Segundos, 1
+ 753              	Segundos:
+ 754 001a 00       		.space	1
+ 755              		.type	BandeBrillo, %object
+ 756              		.size	BandeBrillo, 1
+ 757              	BandeBrillo:
+ 758 001b 00       		.space	1
+ 759              		.type	cnt4seg, %object
+ 760              		.size	cnt4seg, 1
+ 761              	cnt4seg:
+ 762 001c 00       		.space	1
+ 763              		.type	TitileoSingularDespla, %object
+ 764              		.size	TitileoSingularDespla, 1
+ 765              	TitileoSingularDespla:
+ 766 001d 00       		.space	1
+ 767              		.text
+ 768              	.Letext0:
+ 769              		.file 2 "c:\\program files (x86)\\cypress\\psoc creator\\4.4\\psoc creator\\import\\gnu\\arm\\5.4.
+ 770              		.file 3 "c:\\program files (x86)\\cypress\\psoc creator\\4.4\\psoc creator\\import\\gnu\\arm\\5.4.
+ 771              		.file 4 "Generated_Source\\PSoC5/cytypes.h"
+ 772              		.file 5 "Generated_Source\\PSoC5/core_cm3.h"
+ 773              		.file 6 "Generated_Source\\PSoC5/Interrupt.h"
+ 774              		.file 7 "Generated_Source\\PSoC5/Timer.h"
+ 775              		.file 8 "Generated_Source\\PSoC5/Segments.h"
+ 776              		.file 9 "Generated_Source\\PSoC5/Contador.h"
+ 777              		.file 10 "Generated_Source\\PSoC5/DosP.h"
+ 778              		.file 11 "Generated_Source\\PSoC5/SW.h"
+ 779              		.file 12 "Generated_Source\\PSoC5/SW_buzz.h"
+ 780              		.file 13 "Generated_Source\\PSoC5/Buzzer.h"
+ 781              		.file 14 "Generated_Source\\PSoC5/LEDS.h"
+ 782              		.file 15 "Generated_Source\\PSoC5/SW_vel.h"
+ 783              		.section	.debug_info,"",%progbits
+ 784              	.Ldebug_info0:
+ 785 0000 CE050000 		.4byte	0x5ce
+ 786 0004 0400     		.2byte	0x4
+ 787 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 788 000a 04       		.byte	0x4
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 20
+
+
+ 789 000b 01       		.uleb128 0x1
+ 790 000c 2E010000 		.4byte	.LASF53
+ 791 0010 0C       		.byte	0xc
+ 792 0011 00030000 		.4byte	.LASF54
+ 793 0015 19000000 		.4byte	.LASF55
+ 794 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 795 001d 00000000 		.4byte	0
+ 796 0021 00000000 		.4byte	.Ldebug_line0
+ 797 0025 02       		.uleb128 0x2
+ 798 0026 01       		.byte	0x1
+ 799 0027 06       		.byte	0x6
+ 800 0028 19010000 		.4byte	.LASF0
+ 801 002c 02       		.uleb128 0x2
+ 802 002d 01       		.byte	0x1
+ 803 002e 08       		.byte	0x8
+ 804 002f 24020000 		.4byte	.LASF1
+ 805 0033 02       		.uleb128 0x2
+ 806 0034 02       		.byte	0x2
+ 807 0035 05       		.byte	0x5
+ 808 0036 E7000000 		.4byte	.LASF2
+ 809 003a 02       		.uleb128 0x2
+ 810 003b 02       		.byte	0x2
+ 811 003c 07       		.byte	0x7
+ 812 003d E9010000 		.4byte	.LASF3
+ 813 0041 03       		.uleb128 0x3
+ 814 0042 BB000000 		.4byte	.LASF9
+ 815 0046 02       		.byte	0x2
+ 816 0047 3F       		.byte	0x3f
+ 817 0048 4C000000 		.4byte	0x4c
+ 818 004c 02       		.uleb128 0x2
+ 819 004d 04       		.byte	0x4
+ 820 004e 05       		.byte	0x5
+ 821 004f 5C030000 		.4byte	.LASF4
+ 822 0053 02       		.uleb128 0x2
+ 823 0054 04       		.byte	0x4
+ 824 0055 07       		.byte	0x7
+ 825 0056 D2020000 		.4byte	.LASF5
+ 826 005a 02       		.uleb128 0x2
+ 827 005b 08       		.byte	0x8
+ 828 005c 05       		.byte	0x5
+ 829 005d 00000000 		.4byte	.LASF6
+ 830 0061 02       		.uleb128 0x2
+ 831 0062 08       		.byte	0x8
+ 832 0063 07       		.byte	0x7
+ 833 0064 7D020000 		.4byte	.LASF7
+ 834 0068 04       		.uleb128 0x4
+ 835 0069 04       		.byte	0x4
+ 836 006a 05       		.byte	0x5
+ 837 006b 696E7400 		.ascii	"int\000"
+ 838 006f 02       		.uleb128 0x2
+ 839 0070 04       		.byte	0x4
+ 840 0071 07       		.byte	0x7
+ 841 0072 69020000 		.4byte	.LASF8
+ 842 0076 03       		.uleb128 0x3
+ 843 0077 0B010000 		.4byte	.LASF10
+ 844 007b 03       		.byte	0x3
+ 845 007c 2C       		.byte	0x2c
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 21
+
+
+ 846 007d 41000000 		.4byte	0x41
+ 847 0081 05       		.uleb128 0x5
+ 848 0082 FA000000 		.4byte	.LASF11
+ 849 0086 04       		.byte	0x4
+ 850 0087 E801     		.2byte	0x1e8
+ 851 0089 2C000000 		.4byte	0x2c
+ 852 008d 05       		.uleb128 0x5
+ 853 008e 52020000 		.4byte	.LASF12
+ 854 0092 04       		.byte	0x4
+ 855 0093 E901     		.2byte	0x1e9
+ 856 0095 3A000000 		.4byte	0x3a
+ 857 0099 02       		.uleb128 0x2
+ 858 009a 04       		.byte	0x4
+ 859 009b 04       		.byte	0x4
+ 860 009c 13010000 		.4byte	.LASF13
+ 861 00a0 02       		.uleb128 0x2
+ 862 00a1 08       		.byte	0x8
+ 863 00a2 04       		.byte	0x4
+ 864 00a3 79030000 		.4byte	.LASF14
+ 865 00a7 02       		.uleb128 0x2
+ 866 00a8 01       		.byte	0x1
+ 867 00a9 08       		.byte	0x8
+ 868 00aa 07030000 		.4byte	.LASF15
+ 869 00ae 06       		.uleb128 0x6
+ 870 00af 81000000 		.4byte	0x81
+ 871 00b3 BE000000 		.4byte	0xbe
+ 872 00b7 07       		.uleb128 0x7
+ 873 00b8 BE000000 		.4byte	0xbe
+ 874 00bc 03       		.byte	0x3
+ 875 00bd 00       		.byte	0
+ 876 00be 02       		.uleb128 0x2
+ 877 00bf 04       		.byte	0x4
+ 878 00c0 07       		.byte	0x7
+ 879 00c1 F7020000 		.4byte	.LASF16
+ 880 00c5 02       		.uleb128 0x2
+ 881 00c6 08       		.byte	0x8
+ 882 00c7 04       		.byte	0x4
+ 883 00c8 65030000 		.4byte	.LASF17
+ 884 00cc 08       		.uleb128 0x8
+ 885 00cd 80030000 		.4byte	.LASF18
+ 886 00d1 01       		.byte	0x1
+ 887 00d2 AF       		.byte	0xaf
+ 888 00d3 00000000 		.4byte	.LFB64
+ 889 00d7 1C000000 		.4byte	.LFE64-.LFB64
+ 890 00db 01       		.uleb128 0x1
+ 891 00dc 9C       		.byte	0x9c
+ 892 00dd 08       		.uleb128 0x8
+ 893 00de ED020000 		.4byte	.LASF19
+ 894 00e2 01       		.byte	0x1
+ 895 00e3 B4       		.byte	0xb4
+ 896 00e4 00000000 		.4byte	.LFB65
+ 897 00e8 0C000000 		.4byte	.LFE65-.LFB65
+ 898 00ec 01       		.uleb128 0x1
+ 899 00ed 9C       		.byte	0x9c
+ 900 00ee 09       		.uleb128 0x9
+ 901 00ef 59020000 		.4byte	.LASF56
+ 902 00f3 01       		.byte	0x1
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 22
+
+
+ 903 00f4 1F       		.byte	0x1f
+ 904 00f5 68000000 		.4byte	0x68
+ 905 00f9 00000000 		.4byte	.LFB63
+ 906 00fd 78030000 		.4byte	.LFE63-.LFB63
+ 907 0101 01       		.uleb128 0x1
+ 908 0102 9C       		.byte	0x9c
+ 909 0103 BC030000 		.4byte	0x3bc
+ 910 0107 0A       		.uleb128 0xa
+ 911 0108 0A000000 		.4byte	.LVL0
+ 912 010c 42050000 		.4byte	0x542
+ 913 0110 1E010000 		.4byte	0x11e
+ 914 0114 0B       		.uleb128 0xb
+ 915 0115 01       		.uleb128 0x1
+ 916 0116 50       		.byte	0x50
+ 917 0117 05       		.uleb128 0x5
+ 918 0118 03       		.byte	0x3
+ 919 0119 00000000 		.4byte	IRQ_ISR
+ 920 011d 00       		.byte	0
+ 921 011e 0A       		.uleb128 0xa
+ 922 011f 10000000 		.4byte	.LVL1
+ 923 0123 4D050000 		.4byte	0x54d
+ 924 0127 35010000 		.4byte	0x135
+ 925 012b 0B       		.uleb128 0xb
+ 926 012c 01       		.uleb128 0x1
+ 927 012d 50       		.byte	0x50
+ 928 012e 05       		.uleb128 0x5
+ 929 012f 03       		.byte	0x3
+ 930 0130 00000000 		.4byte	Timer_ISR
+ 931 0134 00       		.byte	0
+ 932 0135 0C       		.uleb128 0xc
+ 933 0136 14000000 		.4byte	.LVL2
+ 934 013a 58050000 		.4byte	0x558
+ 935 013e 0C       		.uleb128 0xc
+ 936 013f 18000000 		.4byte	.LVL3
+ 937 0143 63050000 		.4byte	0x563
+ 938 0147 0A       		.uleb128 0xa
+ 939 0148 1E000000 		.4byte	.LVL4
+ 940 014c 6E050000 		.4byte	0x56e
+ 941 0150 5A010000 		.4byte	0x15a
+ 942 0154 0B       		.uleb128 0xb
+ 943 0155 01       		.uleb128 0x1
+ 944 0156 50       		.byte	0x50
+ 945 0157 01       		.uleb128 0x1
+ 946 0158 31       		.byte	0x31
+ 947 0159 00       		.byte	0
+ 948 015a 0A       		.uleb128 0xa
+ 949 015b 2A000000 		.4byte	.LVL5
+ 950 015f 79050000 		.4byte	0x579
+ 951 0163 7C010000 		.4byte	0x17c
+ 952 0167 0B       		.uleb128 0xb
+ 953 0168 01       		.uleb128 0x1
+ 954 0169 50       		.byte	0x50
+ 955 016a 01       		.uleb128 0x1
+ 956 016b 30       		.byte	0x30
+ 957 016c 0B       		.uleb128 0xb
+ 958 016d 01       		.uleb128 0x1
+ 959 016e 51       		.byte	0x51
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 23
+
+
+ 960 016f 01       		.uleb128 0x1
+ 961 0170 31       		.byte	0x31
+ 962 0171 0B       		.uleb128 0xb
+ 963 0172 01       		.uleb128 0x1
+ 964 0173 52       		.byte	0x52
+ 965 0174 01       		.uleb128 0x1
+ 966 0175 33       		.byte	0x33
+ 967 0176 0B       		.uleb128 0xb
+ 968 0177 01       		.uleb128 0x1
+ 969 0178 53       		.byte	0x53
+ 970 0179 01       		.uleb128 0x1
+ 971 017a 32       		.byte	0x32
+ 972 017b 00       		.byte	0
+ 973 017c 0C       		.uleb128 0xc
+ 974 017d 44000000 		.4byte	.LVL6
+ 975 0181 84050000 		.4byte	0x584
+ 976 0185 0C       		.uleb128 0xc
+ 977 0186 66000000 		.4byte	.LVL7
+ 978 018a 8F050000 		.4byte	0x58f
+ 979 018e 0C       		.uleb128 0xc
+ 980 018f 78000000 		.4byte	.LVL8
+ 981 0193 8F050000 		.4byte	0x58f
+ 982 0197 0C       		.uleb128 0xc
+ 983 0198 A0000000 		.4byte	.LVL9
+ 984 019c 8F050000 		.4byte	0x58f
+ 985 01a0 0C       		.uleb128 0xc
+ 986 01a1 1C010000 		.4byte	.LVL10
+ 987 01a5 9A050000 		.4byte	0x59a
+ 988 01a9 0C       		.uleb128 0xc
+ 989 01aa 42010000 		.4byte	.LVL11
+ 990 01ae 8F050000 		.4byte	0x58f
+ 991 01b2 0C       		.uleb128 0xc
+ 992 01b3 6A010000 		.4byte	.LVL12
+ 993 01b7 84050000 		.4byte	0x584
+ 994 01bb 0A       		.uleb128 0xa
+ 995 01bc 8C010000 		.4byte	.LVL13
+ 996 01c0 8F050000 		.4byte	0x58f
+ 997 01c4 CE010000 		.4byte	0x1ce
+ 998 01c8 0B       		.uleb128 0xb
+ 999 01c9 01       		.uleb128 0x1
+ 1000 01ca 51       		.byte	0x51
+ 1001 01cb 01       		.uleb128 0x1
+ 1002 01cc 30       		.byte	0x30
+ 1003 01cd 00       		.byte	0
+ 1004 01ce 0A       		.uleb128 0xa
+ 1005 01cf 94010000 		.4byte	.LVL14
+ 1006 01d3 8F050000 		.4byte	0x58f
+ 1007 01d7 E1010000 		.4byte	0x1e1
+ 1008 01db 0B       		.uleb128 0xb
+ 1009 01dc 01       		.uleb128 0x1
+ 1010 01dd 51       		.byte	0x51
+ 1011 01de 01       		.uleb128 0x1
+ 1012 01df 31       		.byte	0x31
+ 1013 01e0 00       		.byte	0
+ 1014 01e1 0A       		.uleb128 0xa
+ 1015 01e2 9C010000 		.4byte	.LVL15
+ 1016 01e6 8F050000 		.4byte	0x58f
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 24
+
+
+ 1017 01ea F4010000 		.4byte	0x1f4
+ 1018 01ee 0B       		.uleb128 0xb
+ 1019 01ef 01       		.uleb128 0x1
+ 1020 01f0 51       		.byte	0x51
+ 1021 01f1 01       		.uleb128 0x1
+ 1022 01f2 32       		.byte	0x32
+ 1023 01f3 00       		.byte	0
+ 1024 01f4 0A       		.uleb128 0xa
+ 1025 01f5 A4010000 		.4byte	.LVL16
+ 1026 01f9 8F050000 		.4byte	0x58f
+ 1027 01fd 07020000 		.4byte	0x207
+ 1028 0201 0B       		.uleb128 0xb
+ 1029 0202 01       		.uleb128 0x1
+ 1030 0203 51       		.byte	0x51
+ 1031 0204 01       		.uleb128 0x1
+ 1032 0205 33       		.byte	0x33
+ 1033 0206 00       		.byte	0
+ 1034 0207 0C       		.uleb128 0xc
+ 1035 0208 A8010000 		.4byte	.LVL17
+ 1036 020c A5050000 		.4byte	0x5a5
+ 1037 0210 0C       		.uleb128 0xc
+ 1038 0211 C8010000 		.4byte	.LVL18
+ 1039 0215 B0050000 		.4byte	0x5b0
+ 1040 0219 0A       		.uleb128 0xa
+ 1041 021a D0010000 		.4byte	.LVL19
+ 1042 021e B0050000 		.4byte	0x5b0
+ 1043 0222 2C020000 		.4byte	0x22c
+ 1044 0226 0B       		.uleb128 0xb
+ 1045 0227 01       		.uleb128 0x1
+ 1046 0228 50       		.byte	0x50
+ 1047 0229 01       		.uleb128 0x1
+ 1048 022a 30       		.byte	0x30
+ 1049 022b 00       		.byte	0
+ 1050 022c 0A       		.uleb128 0xa
+ 1051 022d D8010000 		.4byte	.LVL20
+ 1052 0231 B0050000 		.4byte	0x5b0
+ 1053 0235 3F020000 		.4byte	0x23f
+ 1054 0239 0B       		.uleb128 0xb
+ 1055 023a 01       		.uleb128 0x1
+ 1056 023b 50       		.byte	0x50
+ 1057 023c 01       		.uleb128 0x1
+ 1058 023d 30       		.byte	0x30
+ 1059 023e 00       		.byte	0
+ 1060 023f 0A       		.uleb128 0xa
+ 1061 0240 E2010000 		.4byte	.LVL21
+ 1062 0244 8F050000 		.4byte	0x58f
+ 1063 0248 52020000 		.4byte	0x252
+ 1064 024c 0B       		.uleb128 0xb
+ 1065 024d 01       		.uleb128 0x1
+ 1066 024e 51       		.byte	0x51
+ 1067 024f 01       		.uleb128 0x1
+ 1068 0250 31       		.byte	0x31
+ 1069 0251 00       		.byte	0
+ 1070 0252 0A       		.uleb128 0xa
+ 1071 0253 48020000 		.4byte	.LVL22
+ 1072 0257 9A050000 		.4byte	0x59a
+ 1073 025b 65020000 		.4byte	0x265
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 25
+
+
+ 1074 025f 0B       		.uleb128 0xb
+ 1075 0260 01       		.uleb128 0x1
+ 1076 0261 51       		.byte	0x51
+ 1077 0262 01       		.uleb128 0x1
+ 1078 0263 31       		.byte	0x31
+ 1079 0264 00       		.byte	0
+ 1080 0265 0A       		.uleb128 0xa
+ 1081 0266 50020000 		.4byte	.LVL23
+ 1082 026a 9A050000 		.4byte	0x59a
+ 1083 026e 78020000 		.4byte	0x278
+ 1084 0272 0B       		.uleb128 0xb
+ 1085 0273 01       		.uleb128 0x1
+ 1086 0274 51       		.byte	0x51
+ 1087 0275 01       		.uleb128 0x1
+ 1088 0276 32       		.byte	0x32
+ 1089 0277 00       		.byte	0
+ 1090 0278 0A       		.uleb128 0xa
+ 1091 0279 58020000 		.4byte	.LVL24
+ 1092 027d 9A050000 		.4byte	0x59a
+ 1093 0281 8B020000 		.4byte	0x28b
+ 1094 0285 0B       		.uleb128 0xb
+ 1095 0286 01       		.uleb128 0x1
+ 1096 0287 51       		.byte	0x51
+ 1097 0288 01       		.uleb128 0x1
+ 1098 0289 33       		.byte	0x33
+ 1099 028a 00       		.byte	0
+ 1100 028b 0A       		.uleb128 0xa
+ 1101 028c 7A020000 		.4byte	.LVL25
+ 1102 0290 BB050000 		.4byte	0x5bb
+ 1103 0294 9E020000 		.4byte	0x29e
+ 1104 0298 0B       		.uleb128 0xb
+ 1105 0299 01       		.uleb128 0x1
+ 1106 029a 50       		.byte	0x50
+ 1107 029b 01       		.uleb128 0x1
+ 1108 029c 31       		.byte	0x31
+ 1109 029d 00       		.byte	0
+ 1110 029e 0A       		.uleb128 0xa
+ 1111 029f 80020000 		.4byte	.LVL26
+ 1112 02a3 B0050000 		.4byte	0x5b0
+ 1113 02a7 B1020000 		.4byte	0x2b1
+ 1114 02ab 0B       		.uleb128 0xb
+ 1115 02ac 01       		.uleb128 0x1
+ 1116 02ad 50       		.byte	0x50
+ 1117 02ae 01       		.uleb128 0x1
+ 1118 02af 30       		.byte	0x30
+ 1119 02b0 00       		.byte	0
+ 1120 02b1 0A       		.uleb128 0xa
+ 1121 02b2 8A020000 		.4byte	.LVL27
+ 1122 02b6 8F050000 		.4byte	0x58f
+ 1123 02ba C4020000 		.4byte	0x2c4
+ 1124 02be 0B       		.uleb128 0xb
+ 1125 02bf 01       		.uleb128 0x1
+ 1126 02c0 51       		.byte	0x51
+ 1127 02c1 01       		.uleb128 0x1
+ 1128 02c2 30       		.byte	0x30
+ 1129 02c3 00       		.byte	0
+ 1130 02c4 0A       		.uleb128 0xa
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 26
+
+
+ 1131 02c5 96020000 		.4byte	.LVL28
+ 1132 02c9 79050000 		.4byte	0x579
+ 1133 02cd E6020000 		.4byte	0x2e6
+ 1134 02d1 0B       		.uleb128 0xb
+ 1135 02d2 01       		.uleb128 0x1
+ 1136 02d3 50       		.byte	0x50
+ 1137 02d4 01       		.uleb128 0x1
+ 1138 02d5 30       		.byte	0x30
+ 1139 02d6 0B       		.uleb128 0xb
+ 1140 02d7 01       		.uleb128 0x1
+ 1141 02d8 51       		.byte	0x51
+ 1142 02d9 01       		.uleb128 0x1
+ 1143 02da 30       		.byte	0x30
+ 1144 02db 0B       		.uleb128 0xb
+ 1145 02dc 01       		.uleb128 0x1
+ 1146 02dd 52       		.byte	0x52
+ 1147 02de 01       		.uleb128 0x1
+ 1148 02df 34       		.byte	0x34
+ 1149 02e0 0B       		.uleb128 0xb
+ 1150 02e1 01       		.uleb128 0x1
+ 1151 02e2 53       		.byte	0x53
+ 1152 02e3 01       		.uleb128 0x1
+ 1153 02e4 32       		.byte	0x32
+ 1154 02e5 00       		.byte	0
+ 1155 02e6 0C       		.uleb128 0xc
+ 1156 02e7 9A020000 		.4byte	.LVL29
+ 1157 02eb 84050000 		.4byte	0x584
+ 1158 02ef 0A       		.uleb128 0xa
+ 1159 02f0 E8020000 		.4byte	.LVL30
+ 1160 02f4 79050000 		.4byte	0x579
+ 1161 02f8 11030000 		.4byte	0x311
+ 1162 02fc 0B       		.uleb128 0xb
+ 1163 02fd 01       		.uleb128 0x1
+ 1164 02fe 50       		.byte	0x50
+ 1165 02ff 01       		.uleb128 0x1
+ 1166 0300 30       		.byte	0x30
+ 1167 0301 0B       		.uleb128 0xb
+ 1168 0302 01       		.uleb128 0x1
+ 1169 0303 51       		.byte	0x51
+ 1170 0304 01       		.uleb128 0x1
+ 1171 0305 30       		.byte	0x30
+ 1172 0306 0B       		.uleb128 0xb
+ 1173 0307 01       		.uleb128 0x1
+ 1174 0308 52       		.byte	0x52
+ 1175 0309 01       		.uleb128 0x1
+ 1176 030a 34       		.byte	0x34
+ 1177 030b 0B       		.uleb128 0xb
+ 1178 030c 01       		.uleb128 0x1
+ 1179 030d 53       		.byte	0x53
+ 1180 030e 01       		.uleb128 0x1
+ 1181 030f 32       		.byte	0x32
+ 1182 0310 00       		.byte	0
+ 1183 0311 0A       		.uleb128 0xa
+ 1184 0312 F8020000 		.4byte	.LVL31
+ 1185 0316 8F050000 		.4byte	0x58f
+ 1186 031a 24030000 		.4byte	0x324
+ 1187 031e 0B       		.uleb128 0xb
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 27
+
+
+ 1188 031f 01       		.uleb128 0x1
+ 1189 0320 51       		.byte	0x51
+ 1190 0321 01       		.uleb128 0x1
+ 1191 0322 31       		.byte	0x31
+ 1192 0323 00       		.byte	0
+ 1193 0324 0A       		.uleb128 0xa
+ 1194 0325 00030000 		.4byte	.LVL32
+ 1195 0329 8F050000 		.4byte	0x58f
+ 1196 032d 37030000 		.4byte	0x337
+ 1197 0331 0B       		.uleb128 0xb
+ 1198 0332 01       		.uleb128 0x1
+ 1199 0333 51       		.byte	0x51
+ 1200 0334 01       		.uleb128 0x1
+ 1201 0335 32       		.byte	0x32
+ 1202 0336 00       		.byte	0
+ 1203 0337 0A       		.uleb128 0xa
+ 1204 0338 08030000 		.4byte	.LVL33
+ 1205 033c 8F050000 		.4byte	0x58f
+ 1206 0340 4A030000 		.4byte	0x34a
+ 1207 0344 0B       		.uleb128 0xb
+ 1208 0345 01       		.uleb128 0x1
+ 1209 0346 51       		.byte	0x51
+ 1210 0347 01       		.uleb128 0x1
+ 1211 0348 33       		.byte	0x33
+ 1212 0349 00       		.byte	0
+ 1213 034a 0A       		.uleb128 0xa
+ 1214 034b 10030000 		.4byte	.LVL34
+ 1215 034f 8F050000 		.4byte	0x58f
+ 1216 0353 5D030000 		.4byte	0x35d
+ 1217 0357 0B       		.uleb128 0xb
+ 1218 0358 01       		.uleb128 0x1
+ 1219 0359 51       		.byte	0x51
+ 1220 035a 01       		.uleb128 0x1
+ 1221 035b 30       		.byte	0x30
+ 1222 035c 00       		.byte	0
+ 1223 035d 0A       		.uleb128 0xa
+ 1224 035e 22030000 		.4byte	.LVL35
+ 1225 0362 8F050000 		.4byte	0x58f
+ 1226 0366 70030000 		.4byte	0x370
+ 1227 036a 0B       		.uleb128 0xb
+ 1228 036b 01       		.uleb128 0x1
+ 1229 036c 51       		.byte	0x51
+ 1230 036d 01       		.uleb128 0x1
+ 1231 036e 31       		.byte	0x31
+ 1232 036f 00       		.byte	0
+ 1233 0370 0A       		.uleb128 0xa
+ 1234 0371 2A030000 		.4byte	.LVL36
+ 1235 0375 8F050000 		.4byte	0x58f
+ 1236 0379 83030000 		.4byte	0x383
+ 1237 037d 0B       		.uleb128 0xb
+ 1238 037e 01       		.uleb128 0x1
+ 1239 037f 51       		.byte	0x51
+ 1240 0380 01       		.uleb128 0x1
+ 1241 0381 32       		.byte	0x32
+ 1242 0382 00       		.byte	0
+ 1243 0383 0A       		.uleb128 0xa
+ 1244 0384 32030000 		.4byte	.LVL37
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 28
+
+
+ 1245 0388 8F050000 		.4byte	0x58f
+ 1246 038c 96030000 		.4byte	0x396
+ 1247 0390 0B       		.uleb128 0xb
+ 1248 0391 01       		.uleb128 0x1
+ 1249 0392 51       		.byte	0x51
+ 1250 0393 01       		.uleb128 0x1
+ 1251 0394 33       		.byte	0x33
+ 1252 0395 00       		.byte	0
+ 1253 0396 0A       		.uleb128 0xa
+ 1254 0397 3A030000 		.4byte	.LVL38
+ 1255 039b 8F050000 		.4byte	0x58f
+ 1256 039f A9030000 		.4byte	0x3a9
+ 1257 03a3 0B       		.uleb128 0xb
+ 1258 03a4 01       		.uleb128 0x1
+ 1259 03a5 51       		.byte	0x51
+ 1260 03a6 01       		.uleb128 0x1
+ 1261 03a7 30       		.byte	0x30
+ 1262 03a8 00       		.byte	0
+ 1263 03a9 0C       		.uleb128 0xc
+ 1264 03aa 4C030000 		.4byte	.LVL39
+ 1265 03ae C6050000 		.4byte	0x5c6
+ 1266 03b2 0C       		.uleb128 0xc
+ 1267 03b3 5A030000 		.4byte	.LVL40
+ 1268 03b7 C6050000 		.4byte	0x5c6
+ 1269 03bb 00       		.byte	0
+ 1270 03bc 0D       		.uleb128 0xd
+ 1271 03bd 17020000 		.4byte	.LASF20
+ 1272 03c1 05       		.byte	0x5
+ 1273 03c2 1207     		.2byte	0x712
+ 1274 03c4 C8030000 		.4byte	0x3c8
+ 1275 03c8 0E       		.uleb128 0xe
+ 1276 03c9 76000000 		.4byte	0x76
+ 1277 03cd 0F       		.uleb128 0xf
+ 1278 03ce 0E000000 		.4byte	.LASF21
+ 1279 03d2 01       		.byte	0x1
+ 1280 03d3 0F       		.byte	0xf
+ 1281 03d4 81000000 		.4byte	0x81
+ 1282 03d8 05       		.uleb128 0x5
+ 1283 03d9 03       		.byte	0x3
+ 1284 03da 00000000 		.4byte	band_2mili
+ 1285 03de 0F       		.uleb128 0xf
+ 1286 03df D1000000 		.4byte	.LASF22
+ 1287 03e3 01       		.byte	0x1
+ 1288 03e4 10       		.byte	0x10
+ 1289 03e5 81000000 		.4byte	0x81
+ 1290 03e9 05       		.uleb128 0x5
+ 1291 03ea 03       		.byte	0x3
+ 1292 03eb 00000000 		.4byte	TitileoSingularDespla
+ 1293 03ef 0F       		.uleb128 0xf
+ 1294 03f0 32020000 		.4byte	.LASF23
+ 1295 03f4 01       		.byte	0x1
+ 1296 03f5 11       		.byte	0x11
+ 1297 03f6 8D000000 		.4byte	0x8d
+ 1298 03fa 05       		.uleb128 0x5
+ 1299 03fb 03       		.byte	0x3
+ 1300 03fc 00000000 		.4byte	band380ms
+ 1301 0400 0F       		.uleb128 0xf
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 29
+
+
+ 1302 0401 09020000 		.4byte	.LASF24
+ 1303 0405 01       		.byte	0x1
+ 1304 0406 12       		.byte	0x12
+ 1305 0407 81000000 		.4byte	0x81
+ 1306 040b 05       		.uleb128 0x5
+ 1307 040c 03       		.byte	0x3
+ 1308 040d 00000000 		.4byte	mili2segundos
+ 1309 0411 0F       		.uleb128 0xf
+ 1310 0412 FC010000 		.4byte	.LASF25
+ 1311 0416 01       		.byte	0x1
+ 1312 0417 13       		.byte	0x13
+ 1313 0418 81000000 		.4byte	0x81
+ 1314 041c 05       		.uleb128 0x5
+ 1315 041d 03       		.byte	0x3
+ 1316 041e 00000000 		.4byte	pulsecounter
+ 1317 0422 0F       		.uleb128 0xf
+ 1318 0423 93030000 		.4byte	.LASF26
+ 1319 0427 01       		.byte	0x1
+ 1320 0428 14       		.byte	0x14
+ 1321 0429 81000000 		.4byte	0x81
+ 1322 042d 05       		.uleb128 0x5
+ 1323 042e 03       		.byte	0x3
+ 1324 042f 00000000 		.4byte	Posicion
+ 1325 0433 0F       		.uleb128 0xf
+ 1326 0434 C5010000 		.4byte	.LASF27
+ 1327 0438 01       		.byte	0x1
+ 1328 0439 15       		.byte	0x15
+ 1329 043a AE000000 		.4byte	0xae
+ 1330 043e 05       		.uleb128 0x5
+ 1331 043f 03       		.byte	0x3
+ 1332 0440 00000000 		.4byte	contador
+ 1333 0444 0F       		.uleb128 0xf
+ 1334 0445 71030000 		.4byte	.LASF28
+ 1335 0449 01       		.byte	0x1
+ 1336 044a 16       		.byte	0x16
+ 1337 044b 81000000 		.4byte	0x81
+ 1338 044f 05       		.uleb128 0x5
+ 1339 0450 03       		.byte	0x3
+ 1340 0451 00000000 		.4byte	cnt4seg
+ 1341 0455 06       		.uleb128 0x6
+ 1342 0456 81000000 		.4byte	0x81
+ 1343 045a 65040000 		.4byte	0x465
+ 1344 045e 07       		.uleb128 0x7
+ 1345 045f BE000000 		.4byte	0xbe
+ 1346 0463 01       		.byte	0x1
+ 1347 0464 00       		.byte	0
+ 1348 0465 0F       		.uleb128 0xf
+ 1349 0466 76020000 		.4byte	.LASF29
+ 1350 046a 01       		.byte	0x1
+ 1351 046b 17       		.byte	0x17
+ 1352 046c 55040000 		.4byte	0x455
+ 1353 0470 05       		.uleb128 0x5
+ 1354 0471 03       		.byte	0x3
+ 1355 0472 00000000 		.4byte	Bright
+ 1356 0476 0F       		.uleb128 0xf
+ 1357 0477 CE010000 		.4byte	.LASF30
+ 1358 047b 01       		.byte	0x1
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 30
+
+
+ 1359 047c 18       		.byte	0x18
+ 1360 047d 81000000 		.4byte	0x81
+ 1361 0481 05       		.uleb128 0x5
+ 1362 0482 03       		.byte	0x3
+ 1363 0483 00000000 		.4byte	BandeBrillo
+ 1364 0487 0F       		.uleb128 0xf
+ 1365 0488 E4020000 		.4byte	.LASF31
+ 1366 048c 01       		.byte	0x1
+ 1367 048d 19       		.byte	0x19
+ 1368 048e 8D000000 		.4byte	0x8d
+ 1369 0492 05       		.uleb128 0x5
+ 1370 0493 03       		.byte	0x3
+ 1371 0494 00000000 		.4byte	band4seg
+ 1372 0498 10       		.uleb128 0x10
+ 1373 0499 636E7400 		.ascii	"cnt\000"
+ 1374 049d 01       		.byte	0x1
+ 1375 049e 1A       		.byte	0x1a
+ 1376 049f 8D000000 		.4byte	0x8d
+ 1377 04a3 05       		.uleb128 0x5
+ 1378 04a4 03       		.byte	0x3
+ 1379 04a5 00000000 		.4byte	cnt
+ 1380 04a9 0F       		.uleb128 0xf
+ 1381 04aa 44020000 		.4byte	.LASF32
+ 1382 04ae 01       		.byte	0x1
+ 1383 04af 1B       		.byte	0x1b
+ 1384 04b0 81000000 		.4byte	0x81
+ 1385 04b4 05       		.uleb128 0x5
+ 1386 04b5 03       		.byte	0x3
+ 1387 04b6 00000000 		.4byte	configuration
+ 1388 04ba 0F       		.uleb128 0xf
+ 1389 04bb BC010000 		.4byte	.LASF33
+ 1390 04bf 01       		.byte	0x1
+ 1391 04c0 1B       		.byte	0x1b
+ 1392 04c1 81000000 		.4byte	0x81
+ 1393 04c5 05       		.uleb128 0x5
+ 1394 04c6 03       		.byte	0x3
+ 1395 04c7 00000000 		.4byte	Segundos
+ 1396 04cb 0F       		.uleb128 0xf
+ 1397 04cc F1000000 		.4byte	.LASF34
+ 1398 04d0 01       		.byte	0x1
+ 1399 04d1 1C       		.byte	0x1c
+ 1400 04d2 8D000000 		.4byte	0x8d
+ 1401 04d6 05       		.uleb128 0x5
+ 1402 04d7 03       		.byte	0x3
+ 1403 04d8 00000000 		.4byte	T_tiempo
+ 1404 04dc 0F       		.uleb128 0xf
+ 1405 04dd 3C020000 		.4byte	.LASF35
+ 1406 04e1 01       		.byte	0x1
+ 1407 04e2 1C       		.byte	0x1c
+ 1408 04e3 8D000000 		.4byte	0x8d
+ 1409 04e7 05       		.uleb128 0x5
+ 1410 04e8 03       		.byte	0x3
+ 1411 04e9 00000000 		.4byte	bandseg
+ 1412 04ed 10       		.uleb128 0x10
+ 1413 04ee 76656C00 		.ascii	"vel\000"
+ 1414 04f2 01       		.byte	0x1
+ 1415 04f3 1C       		.byte	0x1c
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 31
+
+
+ 1416 04f4 8D000000 		.4byte	0x8d
+ 1417 04f8 05       		.uleb128 0x5
+ 1418 04f9 03       		.byte	0x3
+ 1419 04fa 00000000 		.4byte	vel
+ 1420 04fe 0F       		.uleb128 0xf
+ 1421 04ff 88030000 		.4byte	.LASF36
+ 1422 0503 01       		.byte	0x1
+ 1423 0504 1C       		.byte	0x1c
+ 1424 0505 8D000000 		.4byte	0x8d
+ 1425 0509 05       		.uleb128 0x5
+ 1426 050a 03       		.byte	0x3
+ 1427 050b 00000000 		.4byte	cnt_noconf
+ 1428 050f 0F       		.uleb128 0xf
+ 1429 0510 34030000 		.4byte	.LASF37
+ 1430 0514 01       		.byte	0x1
+ 1431 0515 1D       		.byte	0x1d
+ 1432 0516 81000000 		.4byte	0x81
+ 1433 051a 05       		.uleb128 0x5
+ 1434 051b 03       		.byte	0x3
+ 1435 051c 00000000 		.4byte	band_tarea1
+ 1436 0520 0F       		.uleb128 0xf
+ 1437 0521 5E020000 		.4byte	.LASF38
+ 1438 0525 01       		.byte	0x1
+ 1439 0526 1D       		.byte	0x1d
+ 1440 0527 81000000 		.4byte	0x81
+ 1441 052b 05       		.uleb128 0x5
+ 1442 052c 03       		.byte	0x3
+ 1443 052d 00000000 		.4byte	Band_Final
+ 1444 0531 0F       		.uleb128 0xf
+ 1445 0532 25010000 		.4byte	.LASF39
+ 1446 0536 01       		.byte	0x1
+ 1447 0537 1E       		.byte	0x1e
+ 1448 0538 8D000000 		.4byte	0x8d
+ 1449 053c 05       		.uleb128 0x5
+ 1450 053d 03       		.byte	0x3
+ 1451 053e 00000000 		.4byte	cnt_time
+ 1452 0542 11       		.uleb128 0x11
+ 1453 0543 94020000 		.4byte	.LASF40
+ 1454 0547 94020000 		.4byte	.LASF40
+ 1455 054b 06       		.byte	0x6
+ 1456 054c 18       		.byte	0x18
+ 1457 054d 11       		.uleb128 0x11
+ 1458 054e 9E000000 		.4byte	.LASF41
+ 1459 0552 9E000000 		.4byte	.LASF41
+ 1460 0556 07       		.byte	0x7
+ 1461 0557 18       		.byte	0x18
+ 1462 0558 11       		.uleb128 0x11
+ 1463 0559 DA010000 		.4byte	.LASF42
+ 1464 055d DA010000 		.4byte	.LASF42
+ 1465 0561 08       		.byte	0x8
+ 1466 0562 57       		.byte	0x57
+ 1467 0563 11       		.uleb128 0x11
+ 1468 0564 AC000000 		.4byte	.LASF43
+ 1469 0568 AC000000 		.4byte	.LASF43
+ 1470 056c 09       		.byte	0x9
+ 1471 056d 4F       		.byte	0x4f
+ 1472 056e 11       		.uleb128 0x11
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 32
+
+
+ 1473 056f 00010000 		.4byte	.LASF44
+ 1474 0573 00010000 		.4byte	.LASF44
+ 1475 0577 0A       		.byte	0xa
+ 1476 0578 26       		.byte	0x26
+ 1477 0579 11       		.uleb128 0x11
+ 1478 057a 40030000 		.4byte	.LASF45
+ 1479 057e 40030000 		.4byte	.LASF45
+ 1480 0582 08       		.byte	0x8
+ 1481 0583 61       		.byte	0x61
+ 1482 0584 11       		.uleb128 0x11
+ 1483 0585 CA020000 		.4byte	.LASF46
+ 1484 0589 CA020000 		.4byte	.LASF46
+ 1485 058d 0B       		.byte	0xb
+ 1486 058e 29       		.byte	0x29
+ 1487 058f 11       		.uleb128 0x11
+ 1488 0590 A6020000 		.4byte	.LASF47
+ 1489 0594 A6020000 		.4byte	.LASF47
+ 1490 0598 08       		.byte	0x8
+ 1491 0599 8E       		.byte	0x8e
+ 1492 059a 11       		.uleb128 0x11
+ 1493 059b 19030000 		.4byte	.LASF48
+ 1494 059f 19030000 		.4byte	.LASF48
+ 1495 05a3 08       		.byte	0x8
+ 1496 05a4 69       		.byte	0x69
+ 1497 05a5 11       		.uleb128 0x11
+ 1498 05a6 BD020000 		.4byte	.LASF49
+ 1499 05aa BD020000 		.4byte	.LASF49
+ 1500 05ae 0C       		.byte	0xc
+ 1501 05af 29       		.byte	0x29
+ 1502 05b0 11       		.uleb128 0x11
+ 1503 05b1 0C030000 		.4byte	.LASF50
+ 1504 05b5 0C030000 		.4byte	.LASF50
+ 1505 05b9 0D       		.byte	0xd
+ 1506 05ba 26       		.byte	0x26
+ 1507 05bb 11       		.uleb128 0x11
+ 1508 05bc 9C030000 		.4byte	.LASF51
+ 1509 05c0 9C030000 		.4byte	.LASF51
+ 1510 05c4 0E       		.byte	0xe
+ 1511 05c5 26       		.byte	0x26
+ 1512 05c6 11       		.uleb128 0x11
+ 1513 05c7 C5000000 		.4byte	.LASF52
+ 1514 05cb C5000000 		.4byte	.LASF52
+ 1515 05cf 0F       		.byte	0xf
+ 1516 05d0 29       		.byte	0x29
+ 1517 05d1 00       		.byte	0
+ 1518              		.section	.debug_abbrev,"",%progbits
+ 1519              	.Ldebug_abbrev0:
+ 1520 0000 01       		.uleb128 0x1
+ 1521 0001 11       		.uleb128 0x11
+ 1522 0002 01       		.byte	0x1
+ 1523 0003 25       		.uleb128 0x25
+ 1524 0004 0E       		.uleb128 0xe
+ 1525 0005 13       		.uleb128 0x13
+ 1526 0006 0B       		.uleb128 0xb
+ 1527 0007 03       		.uleb128 0x3
+ 1528 0008 0E       		.uleb128 0xe
+ 1529 0009 1B       		.uleb128 0x1b
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 33
+
+
+ 1530 000a 0E       		.uleb128 0xe
+ 1531 000b 55       		.uleb128 0x55
+ 1532 000c 17       		.uleb128 0x17
+ 1533 000d 11       		.uleb128 0x11
+ 1534 000e 01       		.uleb128 0x1
+ 1535 000f 10       		.uleb128 0x10
+ 1536 0010 17       		.uleb128 0x17
+ 1537 0011 00       		.byte	0
+ 1538 0012 00       		.byte	0
+ 1539 0013 02       		.uleb128 0x2
+ 1540 0014 24       		.uleb128 0x24
+ 1541 0015 00       		.byte	0
+ 1542 0016 0B       		.uleb128 0xb
+ 1543 0017 0B       		.uleb128 0xb
+ 1544 0018 3E       		.uleb128 0x3e
+ 1545 0019 0B       		.uleb128 0xb
+ 1546 001a 03       		.uleb128 0x3
+ 1547 001b 0E       		.uleb128 0xe
+ 1548 001c 00       		.byte	0
+ 1549 001d 00       		.byte	0
+ 1550 001e 03       		.uleb128 0x3
+ 1551 001f 16       		.uleb128 0x16
+ 1552 0020 00       		.byte	0
+ 1553 0021 03       		.uleb128 0x3
+ 1554 0022 0E       		.uleb128 0xe
+ 1555 0023 3A       		.uleb128 0x3a
+ 1556 0024 0B       		.uleb128 0xb
+ 1557 0025 3B       		.uleb128 0x3b
+ 1558 0026 0B       		.uleb128 0xb
+ 1559 0027 49       		.uleb128 0x49
+ 1560 0028 13       		.uleb128 0x13
+ 1561 0029 00       		.byte	0
+ 1562 002a 00       		.byte	0
+ 1563 002b 04       		.uleb128 0x4
+ 1564 002c 24       		.uleb128 0x24
+ 1565 002d 00       		.byte	0
+ 1566 002e 0B       		.uleb128 0xb
+ 1567 002f 0B       		.uleb128 0xb
+ 1568 0030 3E       		.uleb128 0x3e
+ 1569 0031 0B       		.uleb128 0xb
+ 1570 0032 03       		.uleb128 0x3
+ 1571 0033 08       		.uleb128 0x8
+ 1572 0034 00       		.byte	0
+ 1573 0035 00       		.byte	0
+ 1574 0036 05       		.uleb128 0x5
+ 1575 0037 16       		.uleb128 0x16
+ 1576 0038 00       		.byte	0
+ 1577 0039 03       		.uleb128 0x3
+ 1578 003a 0E       		.uleb128 0xe
+ 1579 003b 3A       		.uleb128 0x3a
+ 1580 003c 0B       		.uleb128 0xb
+ 1581 003d 3B       		.uleb128 0x3b
+ 1582 003e 05       		.uleb128 0x5
+ 1583 003f 49       		.uleb128 0x49
+ 1584 0040 13       		.uleb128 0x13
+ 1585 0041 00       		.byte	0
+ 1586 0042 00       		.byte	0
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 34
+
+
+ 1587 0043 06       		.uleb128 0x6
+ 1588 0044 01       		.uleb128 0x1
+ 1589 0045 01       		.byte	0x1
+ 1590 0046 49       		.uleb128 0x49
+ 1591 0047 13       		.uleb128 0x13
+ 1592 0048 01       		.uleb128 0x1
+ 1593 0049 13       		.uleb128 0x13
+ 1594 004a 00       		.byte	0
+ 1595 004b 00       		.byte	0
+ 1596 004c 07       		.uleb128 0x7
+ 1597 004d 21       		.uleb128 0x21
+ 1598 004e 00       		.byte	0
+ 1599 004f 49       		.uleb128 0x49
+ 1600 0050 13       		.uleb128 0x13
+ 1601 0051 2F       		.uleb128 0x2f
+ 1602 0052 0B       		.uleb128 0xb
+ 1603 0053 00       		.byte	0
+ 1604 0054 00       		.byte	0
+ 1605 0055 08       		.uleb128 0x8
+ 1606 0056 2E       		.uleb128 0x2e
+ 1607 0057 00       		.byte	0
+ 1608 0058 3F       		.uleb128 0x3f
+ 1609 0059 19       		.uleb128 0x19
+ 1610 005a 03       		.uleb128 0x3
+ 1611 005b 0E       		.uleb128 0xe
+ 1612 005c 3A       		.uleb128 0x3a
+ 1613 005d 0B       		.uleb128 0xb
+ 1614 005e 3B       		.uleb128 0x3b
+ 1615 005f 0B       		.uleb128 0xb
+ 1616 0060 27       		.uleb128 0x27
+ 1617 0061 19       		.uleb128 0x19
+ 1618 0062 11       		.uleb128 0x11
+ 1619 0063 01       		.uleb128 0x1
+ 1620 0064 12       		.uleb128 0x12
+ 1621 0065 06       		.uleb128 0x6
+ 1622 0066 40       		.uleb128 0x40
+ 1623 0067 18       		.uleb128 0x18
+ 1624 0068 9742     		.uleb128 0x2117
+ 1625 006a 19       		.uleb128 0x19
+ 1626 006b 00       		.byte	0
+ 1627 006c 00       		.byte	0
+ 1628 006d 09       		.uleb128 0x9
+ 1629 006e 2E       		.uleb128 0x2e
+ 1630 006f 01       		.byte	0x1
+ 1631 0070 3F       		.uleb128 0x3f
+ 1632 0071 19       		.uleb128 0x19
+ 1633 0072 03       		.uleb128 0x3
+ 1634 0073 0E       		.uleb128 0xe
+ 1635 0074 3A       		.uleb128 0x3a
+ 1636 0075 0B       		.uleb128 0xb
+ 1637 0076 3B       		.uleb128 0x3b
+ 1638 0077 0B       		.uleb128 0xb
+ 1639 0078 27       		.uleb128 0x27
+ 1640 0079 19       		.uleb128 0x19
+ 1641 007a 49       		.uleb128 0x49
+ 1642 007b 13       		.uleb128 0x13
+ 1643 007c 8701     		.uleb128 0x87
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 35
+
+
+ 1644 007e 19       		.uleb128 0x19
+ 1645 007f 11       		.uleb128 0x11
+ 1646 0080 01       		.uleb128 0x1
+ 1647 0081 12       		.uleb128 0x12
+ 1648 0082 06       		.uleb128 0x6
+ 1649 0083 40       		.uleb128 0x40
+ 1650 0084 18       		.uleb128 0x18
+ 1651 0085 9742     		.uleb128 0x2117
+ 1652 0087 19       		.uleb128 0x19
+ 1653 0088 01       		.uleb128 0x1
+ 1654 0089 13       		.uleb128 0x13
+ 1655 008a 00       		.byte	0
+ 1656 008b 00       		.byte	0
+ 1657 008c 0A       		.uleb128 0xa
+ 1658 008d 898201   		.uleb128 0x4109
+ 1659 0090 01       		.byte	0x1
+ 1660 0091 11       		.uleb128 0x11
+ 1661 0092 01       		.uleb128 0x1
+ 1662 0093 31       		.uleb128 0x31
+ 1663 0094 13       		.uleb128 0x13
+ 1664 0095 01       		.uleb128 0x1
+ 1665 0096 13       		.uleb128 0x13
+ 1666 0097 00       		.byte	0
+ 1667 0098 00       		.byte	0
+ 1668 0099 0B       		.uleb128 0xb
+ 1669 009a 8A8201   		.uleb128 0x410a
+ 1670 009d 00       		.byte	0
+ 1671 009e 02       		.uleb128 0x2
+ 1672 009f 18       		.uleb128 0x18
+ 1673 00a0 9142     		.uleb128 0x2111
+ 1674 00a2 18       		.uleb128 0x18
+ 1675 00a3 00       		.byte	0
+ 1676 00a4 00       		.byte	0
+ 1677 00a5 0C       		.uleb128 0xc
+ 1678 00a6 898201   		.uleb128 0x4109
+ 1679 00a9 00       		.byte	0
+ 1680 00aa 11       		.uleb128 0x11
+ 1681 00ab 01       		.uleb128 0x1
+ 1682 00ac 31       		.uleb128 0x31
+ 1683 00ad 13       		.uleb128 0x13
+ 1684 00ae 00       		.byte	0
+ 1685 00af 00       		.byte	0
+ 1686 00b0 0D       		.uleb128 0xd
+ 1687 00b1 34       		.uleb128 0x34
+ 1688 00b2 00       		.byte	0
+ 1689 00b3 03       		.uleb128 0x3
+ 1690 00b4 0E       		.uleb128 0xe
+ 1691 00b5 3A       		.uleb128 0x3a
+ 1692 00b6 0B       		.uleb128 0xb
+ 1693 00b7 3B       		.uleb128 0x3b
+ 1694 00b8 05       		.uleb128 0x5
+ 1695 00b9 49       		.uleb128 0x49
+ 1696 00ba 13       		.uleb128 0x13
+ 1697 00bb 3F       		.uleb128 0x3f
+ 1698 00bc 19       		.uleb128 0x19
+ 1699 00bd 3C       		.uleb128 0x3c
+ 1700 00be 19       		.uleb128 0x19
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 36
+
+
+ 1701 00bf 00       		.byte	0
+ 1702 00c0 00       		.byte	0
+ 1703 00c1 0E       		.uleb128 0xe
+ 1704 00c2 35       		.uleb128 0x35
+ 1705 00c3 00       		.byte	0
+ 1706 00c4 49       		.uleb128 0x49
+ 1707 00c5 13       		.uleb128 0x13
+ 1708 00c6 00       		.byte	0
+ 1709 00c7 00       		.byte	0
+ 1710 00c8 0F       		.uleb128 0xf
+ 1711 00c9 34       		.uleb128 0x34
+ 1712 00ca 00       		.byte	0
+ 1713 00cb 03       		.uleb128 0x3
+ 1714 00cc 0E       		.uleb128 0xe
+ 1715 00cd 3A       		.uleb128 0x3a
+ 1716 00ce 0B       		.uleb128 0xb
+ 1717 00cf 3B       		.uleb128 0x3b
+ 1718 00d0 0B       		.uleb128 0xb
+ 1719 00d1 49       		.uleb128 0x49
+ 1720 00d2 13       		.uleb128 0x13
+ 1721 00d3 3F       		.uleb128 0x3f
+ 1722 00d4 19       		.uleb128 0x19
+ 1723 00d5 02       		.uleb128 0x2
+ 1724 00d6 18       		.uleb128 0x18
+ 1725 00d7 00       		.byte	0
+ 1726 00d8 00       		.byte	0
+ 1727 00d9 10       		.uleb128 0x10
+ 1728 00da 34       		.uleb128 0x34
+ 1729 00db 00       		.byte	0
+ 1730 00dc 03       		.uleb128 0x3
+ 1731 00dd 08       		.uleb128 0x8
+ 1732 00de 3A       		.uleb128 0x3a
+ 1733 00df 0B       		.uleb128 0xb
+ 1734 00e0 3B       		.uleb128 0x3b
+ 1735 00e1 0B       		.uleb128 0xb
+ 1736 00e2 49       		.uleb128 0x49
+ 1737 00e3 13       		.uleb128 0x13
+ 1738 00e4 3F       		.uleb128 0x3f
+ 1739 00e5 19       		.uleb128 0x19
+ 1740 00e6 02       		.uleb128 0x2
+ 1741 00e7 18       		.uleb128 0x18
+ 1742 00e8 00       		.byte	0
+ 1743 00e9 00       		.byte	0
+ 1744 00ea 11       		.uleb128 0x11
+ 1745 00eb 2E       		.uleb128 0x2e
+ 1746 00ec 00       		.byte	0
+ 1747 00ed 3F       		.uleb128 0x3f
+ 1748 00ee 19       		.uleb128 0x19
+ 1749 00ef 3C       		.uleb128 0x3c
+ 1750 00f0 19       		.uleb128 0x19
+ 1751 00f1 6E       		.uleb128 0x6e
+ 1752 00f2 0E       		.uleb128 0xe
+ 1753 00f3 03       		.uleb128 0x3
+ 1754 00f4 0E       		.uleb128 0xe
+ 1755 00f5 3A       		.uleb128 0x3a
+ 1756 00f6 0B       		.uleb128 0xb
+ 1757 00f7 3B       		.uleb128 0x3b
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 37
+
+
+ 1758 00f8 0B       		.uleb128 0xb
+ 1759 00f9 00       		.byte	0
+ 1760 00fa 00       		.byte	0
+ 1761 00fb 00       		.byte	0
+ 1762              		.section	.debug_aranges,"",%progbits
+ 1763 0000 2C000000 		.4byte	0x2c
+ 1764 0004 0200     		.2byte	0x2
+ 1765 0006 00000000 		.4byte	.Ldebug_info0
+ 1766 000a 04       		.byte	0x4
+ 1767 000b 00       		.byte	0
+ 1768 000c 0000     		.2byte	0
+ 1769 000e 0000     		.2byte	0
+ 1770 0010 00000000 		.4byte	.LFB64
+ 1771 0014 1C000000 		.4byte	.LFE64-.LFB64
+ 1772 0018 00000000 		.4byte	.LFB65
+ 1773 001c 0C000000 		.4byte	.LFE65-.LFB65
+ 1774 0020 00000000 		.4byte	.LFB63
+ 1775 0024 78030000 		.4byte	.LFE63-.LFB63
+ 1776 0028 00000000 		.4byte	0
+ 1777 002c 00000000 		.4byte	0
+ 1778              		.section	.debug_ranges,"",%progbits
+ 1779              	.Ldebug_ranges0:
+ 1780 0000 00000000 		.4byte	.LFB64
+ 1781 0004 1C000000 		.4byte	.LFE64
+ 1782 0008 00000000 		.4byte	.LFB65
+ 1783 000c 0C000000 		.4byte	.LFE65
+ 1784 0010 00000000 		.4byte	.LFB63
+ 1785 0014 78030000 		.4byte	.LFE63
+ 1786 0018 00000000 		.4byte	0
+ 1787 001c 00000000 		.4byte	0
+ 1788              		.section	.debug_line,"",%progbits
+ 1789              	.Ldebug_line0:
+ 1790 0000 D0020000 		.section	.debug_str,"MS",%progbits,1
+ 1790      0200C301 
+ 1790      00000201 
+ 1790      FB0E0D00 
+ 1790      01010101 
+ 1791              	.LASF6:
+ 1792 0000 6C6F6E67 		.ascii	"long long int\000"
+ 1792      206C6F6E 
+ 1792      6720696E 
+ 1792      7400
+ 1793              	.LASF21:
+ 1794 000e 62616E64 		.ascii	"band_2mili\000"
+ 1794      5F326D69 
+ 1794      6C6900
+ 1795              	.LASF55:
+ 1796 0019 433A5C55 		.ascii	"C:\\Users\\Esteban\\OneDrive - Universidad de Antio"
+ 1796      73657273 
+ 1796      5C457374 
+ 1796      6562616E 
+ 1796      5C4F6E65 
+ 1797 0049 71756961 		.ascii	"quia\\SEMESTRE 2023-1\\DISPOSITIVOS PROGRAMABLES\\I"
+ 1797      5C53454D 
+ 1797      45535452 
+ 1797      45203230 
+ 1797      32332D31 
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 38
+
+
+ 1798 0079 4E444956 		.ascii	"NDIVIDUAL\\Practica5\\PRACTICA 5.cydsn\000"
+ 1798      49445541 
+ 1798      4C5C5072 
+ 1798      61637469 
+ 1798      6361355C 
+ 1799              	.LASF41:
+ 1800 009e 54696D65 		.ascii	"Timer_StartEx\000"
+ 1800      725F5374 
+ 1800      61727445 
+ 1800      7800
+ 1801              	.LASF43:
+ 1802 00ac 436F6E74 		.ascii	"Contador_Start\000"
+ 1802      61646F72 
+ 1802      5F537461 
+ 1802      727400
+ 1803              	.LASF9:
+ 1804 00bb 5F5F696E 		.ascii	"__int32_t\000"
+ 1804      7433325F 
+ 1804      7400
+ 1805              	.LASF52:
+ 1806 00c5 53575F76 		.ascii	"SW_vel_Read\000"
+ 1806      656C5F52 
+ 1806      65616400 
+ 1807              	.LASF22:
+ 1808 00d1 54697469 		.ascii	"TitileoSingularDespla\000"
+ 1808      6C656F53 
+ 1808      696E6775 
+ 1808      6C617244 
+ 1808      6573706C 
+ 1809              	.LASF2:
+ 1810 00e7 73686F72 		.ascii	"short int\000"
+ 1810      7420696E 
+ 1810      7400
+ 1811              	.LASF34:
+ 1812 00f1 545F7469 		.ascii	"T_tiempo\000"
+ 1812      656D706F 
+ 1812      00
+ 1813              	.LASF11:
+ 1814 00fa 75696E74 		.ascii	"uint8\000"
+ 1814      3800
+ 1815              	.LASF44:
+ 1816 0100 446F7350 		.ascii	"DosP_Write\000"
+ 1816      5F577269 
+ 1816      746500
+ 1817              	.LASF10:
+ 1818 010b 696E7433 		.ascii	"int32_t\000"
+ 1818      325F7400 
+ 1819              	.LASF13:
+ 1820 0113 666C6F61 		.ascii	"float\000"
+ 1820      7400
+ 1821              	.LASF0:
+ 1822 0119 7369676E 		.ascii	"signed char\000"
+ 1822      65642063 
+ 1822      68617200 
+ 1823              	.LASF39:
+ 1824 0125 636E745F 		.ascii	"cnt_time\000"
+ 1824      74696D65 
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 39
+
+
+ 1824      00
+ 1825              	.LASF53:
+ 1826 012e 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 1826      43313120 
+ 1826      352E342E 
+ 1826      31203230 
+ 1826      31363036 
+ 1827 0161 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m3 -mthumb -g -O"
+ 1827      20726576 
+ 1827      6973696F 
+ 1827      6E203233 
+ 1827      37373135 
+ 1828 0194 67202D66 		.ascii	"g -ffunction-sections -ffat-lto-objects\000"
+ 1828      66756E63 
+ 1828      74696F6E 
+ 1828      2D736563 
+ 1828      74696F6E 
+ 1829              	.LASF33:
+ 1830 01bc 53656775 		.ascii	"Segundos\000"
+ 1830      6E646F73 
+ 1830      00
+ 1831              	.LASF27:
+ 1832 01c5 636F6E74 		.ascii	"contador\000"
+ 1832      61646F72 
+ 1832      00
+ 1833              	.LASF30:
+ 1834 01ce 42616E64 		.ascii	"BandeBrillo\000"
+ 1834      65427269 
+ 1834      6C6C6F00 
+ 1835              	.LASF42:
+ 1836 01da 5365676D 		.ascii	"Segments_Start\000"
+ 1836      656E7473 
+ 1836      5F537461 
+ 1836      727400
+ 1837              	.LASF3:
+ 1838 01e9 73686F72 		.ascii	"short unsigned int\000"
+ 1838      7420756E 
+ 1838      7369676E 
+ 1838      65642069 
+ 1838      6E7400
+ 1839              	.LASF25:
+ 1840 01fc 70756C73 		.ascii	"pulsecounter\000"
+ 1840      65636F75 
+ 1840      6E746572 
+ 1840      00
+ 1841              	.LASF24:
+ 1842 0209 6D696C69 		.ascii	"mili2segundos\000"
+ 1842      32736567 
+ 1842      756E646F 
+ 1842      7300
+ 1843              	.LASF20:
+ 1844 0217 49544D5F 		.ascii	"ITM_RxBuffer\000"
+ 1844      52784275 
+ 1844      66666572 
+ 1844      00
+ 1845              	.LASF1:
+ 1846 0224 756E7369 		.ascii	"unsigned char\000"
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 40
+
+
+ 1846      676E6564 
+ 1846      20636861 
+ 1846      7200
+ 1847              	.LASF23:
+ 1848 0232 62616E64 		.ascii	"band380ms\000"
+ 1848      3338306D 
+ 1848      7300
+ 1849              	.LASF35:
+ 1850 023c 62616E64 		.ascii	"bandseg\000"
+ 1850      73656700 
+ 1851              	.LASF32:
+ 1852 0244 636F6E66 		.ascii	"configuration\000"
+ 1852      69677572 
+ 1852      6174696F 
+ 1852      6E00
+ 1853              	.LASF12:
+ 1854 0252 75696E74 		.ascii	"uint16\000"
+ 1854      313600
+ 1855              	.LASF56:
+ 1856 0259 6D61696E 		.ascii	"main\000"
+ 1856      00
+ 1857              	.LASF38:
+ 1858 025e 42616E64 		.ascii	"Band_Final\000"
+ 1858      5F46696E 
+ 1858      616C00
+ 1859              	.LASF8:
+ 1860 0269 756E7369 		.ascii	"unsigned int\000"
+ 1860      676E6564 
+ 1860      20696E74 
+ 1860      00
+ 1861              	.LASF29:
+ 1862 0276 42726967 		.ascii	"Bright\000"
+ 1862      687400
+ 1863              	.LASF7:
+ 1864 027d 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1864      206C6F6E 
+ 1864      6720756E 
+ 1864      7369676E 
+ 1864      65642069 
+ 1865              	.LASF40:
+ 1866 0294 496E7465 		.ascii	"Interrupt_StartEx\000"
+ 1866      72727570 
+ 1866      745F5374 
+ 1866      61727445 
+ 1866      7800
+ 1867              	.LASF47:
+ 1868 02a6 5365676D 		.ascii	"Segments_SetBrightness\000"
+ 1868      656E7473 
+ 1868      5F536574 
+ 1868      42726967 
+ 1868      68746E65 
+ 1869              	.LASF49:
+ 1870 02bd 53575F62 		.ascii	"SW_buzz_Read\000"
+ 1870      757A7A5F 
+ 1870      52656164 
+ 1870      00
+ 1871              	.LASF46:
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 41
+
+
+ 1872 02ca 53575F52 		.ascii	"SW_Read\000"
+ 1872      65616400 
+ 1873              	.LASF5:
+ 1874 02d2 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1874      20756E73 
+ 1874      69676E65 
+ 1874      6420696E 
+ 1874      7400
+ 1875              	.LASF31:
+ 1876 02e4 62616E64 		.ascii	"band4seg\000"
+ 1876      34736567 
+ 1876      00
+ 1877              	.LASF19:
+ 1878 02ed 54696D65 		.ascii	"Timer_ISR\000"
+ 1878      725F4953 
+ 1878      5200
+ 1879              	.LASF16:
+ 1880 02f7 73697A65 		.ascii	"sizetype\000"
+ 1880      74797065 
+ 1880      00
+ 1881              	.LASF54:
+ 1882 0300 6D61696E 		.ascii	"main.c\000"
+ 1882      2E6300
+ 1883              	.LASF15:
+ 1884 0307 63686172 		.ascii	"char\000"
+ 1884      00
+ 1885              	.LASF50:
+ 1886 030c 42757A7A 		.ascii	"Buzzer_Write\000"
+ 1886      65725F57 
+ 1886      72697465 
+ 1886      00
+ 1887              	.LASF48:
+ 1888 0319 5365676D 		.ascii	"Segments_Write7SegDigitDec\000"
+ 1888      656E7473 
+ 1888      5F577269 
+ 1888      74653753 
+ 1888      65674469 
+ 1889              	.LASF37:
+ 1890 0334 62616E64 		.ascii	"band_tarea1\000"
+ 1890      5F746172 
+ 1890      65613100 
+ 1891              	.LASF45:
+ 1892 0340 5365676D 		.ascii	"Segments_Write7SegNumberDec\000"
+ 1892      656E7473 
+ 1892      5F577269 
+ 1892      74653753 
+ 1892      65674E75 
+ 1893              	.LASF4:
+ 1894 035c 6C6F6E67 		.ascii	"long int\000"
+ 1894      20696E74 
+ 1894      00
+ 1895              	.LASF17:
+ 1896 0365 6C6F6E67 		.ascii	"long double\000"
+ 1896      20646F75 
+ 1896      626C6500 
+ 1897              	.LASF28:
+ 1898 0371 636E7434 		.ascii	"cnt4seg\000"
+ARM GAS  C:\Users\Esteban\AppData\Local\Temp\cc5msqOa.s 			page 42
+
+
+ 1898      73656700 
+ 1899              	.LASF14:
+ 1900 0379 646F7562 		.ascii	"double\000"
+ 1900      6C6500
+ 1901              	.LASF18:
+ 1902 0380 4952515F 		.ascii	"IRQ_ISR\000"
+ 1902      49535200 
+ 1903              	.LASF36:
+ 1904 0388 636E745F 		.ascii	"cnt_noconf\000"
+ 1904      6E6F636F 
+ 1904      6E6600
+ 1905              	.LASF26:
+ 1906 0393 506F7369 		.ascii	"Posicion\000"
+ 1906      63696F6E 
+ 1906      00
+ 1907              	.LASF51:
+ 1908 039c 4C454453 		.ascii	"LEDS_Write\000"
+ 1908      5F577269 
+ 1908      746500
+ 1909              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran

@@ -1,0 +1,6 @@
+C:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\psoc\content\default\CyAnnotationLibrary\CyAnnotationLibrary.cylib\CyAnnotationLibrary.cyprj|650db203-4a2a-46d8-99b7-7e082ebe8260
+C:\Users\HP SPECTRE\OneDrive - Universidad de Antioquia\Documentos\PSoC Creator\4.4\Downloads ( 4.4).cylib\Downloads ( 4.4).cyprj|67855c93-7c5b-4ad2-806e-a954d3ec6c41
+C:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\psoc\content\cycomponentlibraryupdates\CyComponentLibraryUpdates.cylib\CyComponentLibraryUpdates.cyprj|cde608d6-6f69-4b54-8f21-b7ab8a119c45
+C:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\psoc\content\cycomponentlibrary\CyComponentLibrary.cylib\CyComponentLibrary.cyprj|e51643c8-b79c-4028-ab3e-f920e681d5e9
+C:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\psoc\content\cyprimitives\CyPrimitives.cylib\CyPrimitives.cyprj|a2699d2e-ebaf-4d9f-b1ce-0a4ecc9969cd
+C:\Users\HP SPECTRE\OneDrive - Universidad de Antioquia\Dispositivos\Practica3\Design01.cydsn\Design01.cyprj|5bb1798e-5f6c-401c-9edb-3cf2d3bfc75e
